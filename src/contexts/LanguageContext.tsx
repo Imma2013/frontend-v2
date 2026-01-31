@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import { translations } from '../services/translations';
 import { type Country, COUNTRIES } from '../types';
 
-interface LanguageContextType {
+export interface LanguageContextType {
   currentCountry: Country;
   setCountry: (country: Country) => void;
   t: (key: string) => string;

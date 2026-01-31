@@ -17,22 +17,23 @@ export interface Product {
 }
 
 export type Grade = 'Brand New' | 'Refurb A' | 'Refurb B' | 'Refurb C' | 'Refurb D';
-export type Origin = 'HK' | 'JP' | 'US' | 'EU' | 'AU' | 'CA';
+export type Origin = 'US';
 
 export const ORIGIN_FLAGS: Record<Origin, string> = {
-  HK: 'hk',
-  JP: 'jp',
-  US: 'us',
-  EU: 'eu',
-  AU: 'au',
-  CA: 'ca'
+  US: 'us'
 };
 
 export const ORIGIN_NAMES: Record<Origin, string> = {
-  HK: 'Hong Kong',
-  JP: 'Japan',
-  US: 'USA',
-  EU: 'Europe',
-  AU: 'Australia',
-  CA: 'Canada'
+  US: 'USA'
 };
+
+export interface Country {
+  code: string;
+  name: string;
+  currency: string;
+  langCode: string;
+}
+
+export const COUNTRIES: Country[] = [
+  { code: 'US', name: 'USA', currency: 'USD', langCode: 'en' }
+];
