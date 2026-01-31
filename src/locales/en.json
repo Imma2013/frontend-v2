@@ -1,0 +1,75 @@
+{
+  "nav": {
+    "search_placeholder": "Search: iPhone 14 A-grade unlocked under $250",
+    "account": "Account",
+    "cart": "Cart",
+    "orders": "My Orders",
+    "watchlist": "Watchlist",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "CRYZO",
+    "subtitle": "Global Wholesale Phone Network",
+    "sourced_from": "Sourced from:",
+    "devices_from": "Devices from:",
+    "search_placeholder": "Search: iPhone 14 A-grade Nigeria profit",
+    "try": "Try:",
+    "ai_badge": "✨ AI-Powered Search",
+    "value_prop_1": "BNIB & Refurbished",
+    "value_prop_2": "Grades A-D",
+    "value_prop_3": "Physical & eSIM Models"
+  },
+  "table": {
+    "warehouse": "Warehouse",
+    "product": "Product",
+    "capacity": "Capacity",
+    "color": "Color",
+    "grade": "Grade",
+    "origin": "Origin",
+    "lock_status": "Lock Status",
+    "available": "Available",
+    "price": "Price",
+    "profit": "Your Profit",
+    "action": "Action",
+    "add_to_cart": "Add to Cart",
+    "unlocked": "UNLOCKED"
+  },
+  "profit_modal": {
+    "title": "Profit Breakdown",
+    "your_cost": "Your Cost:",
+    "resale": "Resale",
+    "profit": "Profit:",
+    "margin": "Margin:",
+    "change_region": "Change Region:",
+    "close": "Close"
+  },
+  "footer": {
+    "tagline": "Global wholesale phones sourced from USA and Hong Kong.",
+    "wholesalers": "Our Wholesalers:",
+    "device_origins": "Device Origins:",
+    "devices_description": "We carry phones from:",
+    "product_types": "Product Types:",
+    "type_1": "BNIB (Non-Activated)",
+    "type_2": "Refurbished",
+    "type_3": "Grades A-D",
+    "type_4": "Physical SIM & eSIM",
+    "quick_links": "Quick Links",
+    "about": "About Us",
+    "how_it_works": "How It Works",
+    "quality": "Quality Promise",
+    "terms": "Terms of Service",
+    "support": "Support & Connect",
+    "contact": "Contact Us",
+    "shipping": "Shipping Info",
+    "faq": "FAQ",
+    "connect": "Connect:",
+    "copyright": "© 2026 CRYZO. All rights reserved.",
+    "privacy": "Privacy"
+  },
+  "language_modal": {
+    "title": "Change Language",
+    "search_placeholder": "Search languages...",
+    "no_results": "No languages found matching",
+    "footer_text": "Changing language will update the site content and may affect pricing and product availability."
+  }
+}

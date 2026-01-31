@@ -1,0 +1,8 @@
+{
+  "nav": { "search_placeholder": "검색: iPhone 14 A등급 잠금해제 $250 이하", "account": "계정", "cart": "장바구니", "orders": "내 주문", "watchlist": "관심목록", "logout": "로그아웃" },
+  "hero": { "title": "CRYZO", "subtitle": "글로벌 도매 휴대폰 네트워크", "sourced_from": "공급처:", "devices_from": "기기 원산지:", "search_placeholder": "검색: iPhone 14 A등급 나이지리아 수익", "try": "시도:", "ai_badge": "✨ AI 기반 검색", "value_prop_1": "미개봉 신품 & 리퍼", "value_prop_2": "등급 A-D", "value_prop_3": "물리적 SIM & eSIM 모델" },
+  "table": { "warehouse": "창고", "product": "제품", "capacity": "용량", "color": "색상", "grade": "등급", "origin": "원산지", "lock_status": "잠금 상태", "available": "재고", "price": "가격", "profit": "귀하의 수익", "action": "작업", "add_to_cart": "장바구니에 추가", "unlocked": "잠금해제됨" },
+  "profit_modal": { "title": "수익 분석", "your_cost": "귀하의 비용:", "resale": "재판매", "profit": "수익:", "margin": "마진:", "change_region": "지역 변경:", "close": "닫기" },
+  "footer": { "tagline": "미국과 홍콩의 글로벌 도매 휴대폰.", "wholesalers": "당사 도매업체:", "device_origins": "기기 원산지:", "devices_description": "다음 지역의 휴대폰을 취급합니다:", "product_types": "제품 유형:", "type_1": "미개봉 신품 (미활성화)", "type_2": "리퍼비시", "type_3": "등급 A-D", "type_4": "물리적 SIM & eSIM", "quick_links": "빠른 링크", "about": "회사 소개", "how_it_works": "작동 방식", "quality": "품질 보증", "terms": "서비스 약관", "support": "지원 및 연락", "contact": "문의하기", "shipping": "배송 정보", "faq": "자주 묻는 질문", "connect": "연결:", "copyright": "© 2026 CRYZO. 모든 권리 보유.", "privacy": "개인정보 보호" },
+  "language_modal": { "title": "언어 변경", "search_placeholder": "언어 검색...", "no_results": "일치하는 언어를 찾을 수 없습니다", "footer_text": "언어를 변경하면 사이트 콘텐츠가 업데이트되며 가격 및 제품 가용성에 영향을 줄 수 있습니다." }
+}

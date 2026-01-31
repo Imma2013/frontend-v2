@@ -1,0 +1,8 @@
+{
+  "nav": { "search_placeholder": "検索：iPhone 14 Aグレード ロック解除 $250以下", "account": "アカウント", "cart": "カート", "orders": "注文履歴", "watchlist": "ウォッチリスト", "logout": "ログアウト" },
+  "hero": { "title": "CRYZO", "subtitle": "グローバル卸売電話ネットワーク", "sourced_from": "調達元：", "devices_from": "デバイスの産地：", "search_placeholder": "検索：iPhone 14 Aグレード ナイジェリア 利益", "try": "試す：", "ai_badge": "✨ AI搭載検索", "value_prop_1": "新品未開封 & 整備済み", "value_prop_2": "グレード A-D", "value_prop_3": "物理SIM & eSIMモデル" },
+  "table": { "warehouse": "倉庫", "product": "製品", "capacity": "容量", "color": "色", "grade": "グレード", "origin": "産地", "lock_status": "ロック状態", "available": "在庫", "price": "価格", "profit": "あなたの利益", "action": "操作", "add_to_cart": "カートに追加", "unlocked": "ロック解除済み" },
+  "profit_modal": { "title": "利益の内訳", "your_cost": "あなたのコスト：", "resale": "再販", "profit": "利益：", "margin": "利益率：", "change_region": "地域を変更：", "close": "閉じる" },
+  "footer": { "tagline": "米国と香港からのグローバル卸売電話。", "wholesalers": "当社の卸売業者：", "device_origins": "デバイスの産地：", "devices_description": "以下の地域からの電話を取り扱っています：", "product_types": "製品タイプ：", "type_1": "新品未開封（未アクティベート）", "type_2": "整備済み", "type_3": "グレード A-D", "type_4": "物理SIM & eSIM", "quick_links": "クイックリンク", "about": "会社概要", "how_it_works": "仕組み", "quality": "品質保証", "terms": "利用規約", "support": "サポート＆お問い合わせ", "contact": "お問い合わせ", "shipping": "配送情報", "faq": "よくある質問", "connect": "接続：", "copyright": "© 2026 CRYZO. 全著作権所有。", "privacy": "プライバシー" },
+  "language_modal": { "title": "言語を変更", "search_placeholder": "言語を検索...", "no_results": "一致する言語が見つかりません", "footer_text": "言語を変更すると、サイトのコンテンツが更新され、価格や製品の在庫状況に影響する場合があります。" }
+}

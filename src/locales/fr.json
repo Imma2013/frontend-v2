@@ -1,0 +1,75 @@
+{
+  "nav": {
+    "search_placeholder": "Rechercher: iPhone 14 grade A débloqué moins de $250",
+    "account": "Compte",
+    "cart": "Panier",
+    "orders": "Mes Commandes",
+    "watchlist": "Favoris",
+    "logout": "Déconnexion"
+  },
+  "hero": {
+    "title": "CRYZO",
+    "subtitle": "Réseau Mondial de Téléphones en Gros",
+    "sourced_from": "Provenant de:",
+    "devices_from": "Appareils de:",
+    "search_placeholder": "Rechercher: iPhone 14 grade A Nigeria profit",
+    "try": "Essayer:",
+    "ai_badge": "✨ Recherche IA",
+    "value_prop_1": "BNIB et Reconditionné",
+    "value_prop_2": "Grades A-D",
+    "value_prop_3": "Modèles SIM Physique et eSIM"
+  },
+  "table": {
+    "warehouse": "Entrepôt",
+    "product": "Produit",
+    "capacity": "Capacité",
+    "color": "Couleur",
+    "grade": "Grade",
+    "origin": "Origine",
+    "lock_status": "État de Verrouillage",
+    "available": "Disponible",
+    "price": "Prix",
+    "profit": "Votre Profit",
+    "action": "Action",
+    "add_to_cart": "Ajouter au Panier",
+    "unlocked": "DÉBLOQUÉ"
+  },
+  "profit_modal": {
+    "title": "Répartition des Profits",
+    "your_cost": "Votre Coût:",
+    "resale": "Revente",
+    "profit": "Profit:",
+    "margin": "Marge:",
+    "change_region": "Changer de Région:",
+    "close": "Fermer"
+  },
+  "footer": {
+    "tagline": "Téléphones en gros mondial depuis les États-Unis et Hong Kong.",
+    "wholesalers": "Nos Grossistes:",
+    "device_origins": "Origines des Appareils:",
+    "devices_description": "Nous avons des téléphones de:",
+    "product_types": "Types de Produits:",
+    "type_1": "BNIB (Non Activé)",
+    "type_2": "Reconditionné",
+    "type_3": "Grades A-D",
+    "type_4": "SIM Physique et eSIM",
+    "quick_links": "Liens Rapides",
+    "about": "À Propos",
+    "how_it_works": "Comment ça Marche",
+    "quality": "Promesse de Qualité",
+    "terms": "Conditions d'Utilisation",
+    "support": "Support et Contact",
+    "contact": "Nous Contacter",
+    "shipping": "Informations d'Expédition",
+    "faq": "FAQ",
+    "connect": "Connecter:",
+    "copyright": "© 2026 CRYZO. Tous droits réservés.",
+    "privacy": "Confidentialité"
+  },
+  "language_modal": {
+    "title": "Changer de Langue",
+    "search_placeholder": "Rechercher des langues...",
+    "no_results": "Aucune langue trouvée correspondant à",
+    "footer_text": "Le changement de langue mettra à jour le contenu du site et peut affecter les prix et la disponibilité des produits."
+  }
+}

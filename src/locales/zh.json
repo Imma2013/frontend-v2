@@ -1,0 +1,8 @@
+{
+  "nav": { "search_placeholder": "搜索：iPhone 14 A级解锁低于$250", "account": "账户", "cart": "购物车", "orders": "我的订单", "watchlist": "关注列表", "logout": "退出登录" },
+  "hero": { "title": "CRYZO", "subtitle": "全球批发手机网络", "sourced_from": "采购自：", "devices_from": "设备来自：", "search_placeholder": "搜索：iPhone 14 A级尼日利亚利润", "try": "尝试：", "ai_badge": "✨ AI智能搜索", "value_prop_1": "全新未激活 & 翻新机", "value_prop_2": "等级 A-D", "value_prop_3": "实体SIM & eSIM型号" },
+  "table": { "warehouse": "仓库", "product": "产品", "capacity": "容量", "color": "颜色", "grade": "等级", "origin": "产地", "lock_status": "锁定状态", "available": "可用", "price": "价格", "profit": "您的利润", "action": "操作", "add_to_cart": "加入购物车", "unlocked": "已解锁" },
+  "profit_modal": { "title": "利润明细", "your_cost": "您的成本：", "resale": "转售", "profit": "利润：", "margin": "利润率：", "change_region": "更改地区：", "close": "关闭" },
+  "footer": { "tagline": "来自美国和香港的全球批发手机。", "wholesalers": "我们的批发商：", "device_origins": "设备产地：", "devices_description": "我们提供来自以下地区的手机：", "product_types": "产品类型：", "type_1": "全新未激活", "type_2": "翻新机", "type_3": "等级 A-D", "type_4": "实体SIM & eSIM", "quick_links": "快速链接", "about": "关于我们", "how_it_works": "如何运作", "quality": "质量承诺", "terms": "服务条款", "support": "支持与联系", "contact": "联系我们", "shipping": "运输信息", "faq": "常见问题", "connect": "联系方式：", "copyright": "© 2026 CRYZO. 保留所有权利。", "privacy": "隐私政策" },
+  "language_modal": { "title": "更改语言", "search_placeholder": "搜索语言...", "no_results": "未找到匹配的语言", "footer_text": "更改语言将更新网站内容，可能会影响价格和产品可用性。" }
+}

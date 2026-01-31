@@ -1,0 +1,75 @@
+{
+  "nav": {
+    "search_placeholder": "Buscar: iPhone 14 grado A desbloqueado menos de $250",
+    "account": "Cuenta",
+    "cart": "Carrito",
+    "orders": "Mis Pedidos",
+    "watchlist": "Favoritos",
+    "logout": "Cerrar Sesión"
+  },
+  "hero": {
+    "title": "CRYZO",
+    "subtitle": "Red Global de Teléfonos al Por Mayor",
+    "sourced_from": "Proveído desde:",
+    "devices_from": "Dispositivos de:",
+    "search_placeholder": "Buscar: iPhone 14 grado A Nigeria ganancia",
+    "try": "Prueba:",
+    "ai_badge": "✨ Búsqueda con IA",
+    "value_prop_1": "BNIB y Reacondicionados",
+    "value_prop_2": "Grados A-D",
+    "value_prop_3": "Modelos SIM Física y eSIM"
+  },
+  "table": {
+    "warehouse": "Almacén",
+    "product": "Producto",
+    "capacity": "Capacidad",
+    "color": "Color",
+    "grade": "Grado",
+    "origin": "Origen",
+    "lock_status": "Estado de Bloqueo",
+    "available": "Disponible",
+    "price": "Precio",
+    "profit": "Tu Ganancia",
+    "action": "Acción",
+    "add_to_cart": "Añadir al Carrito",
+    "unlocked": "DESBLOQUEADO"
+  },
+  "profit_modal": {
+    "title": "Desglose de Ganancias",
+    "your_cost": "Tu Costo:",
+    "resale": "Reventa",
+    "profit": "Ganancia:",
+    "margin": "Margen:",
+    "change_region": "Cambiar Región:",
+    "close": "Cerrar"
+  },
+  "footer": {
+    "tagline": "Teléfonos al por mayor global desde EE.UU. y Hong Kong.",
+    "wholesalers": "Nuestros Mayoristas:",
+    "device_origins": "Orígenes de Dispositivos:",
+    "devices_description": "Tenemos teléfonos de:",
+    "product_types": "Tipos de Productos:",
+    "type_1": "BNIB (Sin Activar)",
+    "type_2": "Reacondicionado",
+    "type_3": "Grados A-D",
+    "type_4": "SIM Física y eSIM",
+    "quick_links": "Enlaces Rápidos",
+    "about": "Sobre Nosotros",
+    "how_it_works": "Cómo Funciona",
+    "quality": "Promesa de Calidad",
+    "terms": "Términos de Servicio",
+    "support": "Soporte y Contacto",
+    "contact": "Contáctanos",
+    "shipping": "Información de Envío",
+    "faq": "Preguntas Frecuentes",
+    "connect": "Conectar:",
+    "copyright": "© 2026 CRYZO. Todos los derechos reservados.",
+    "privacy": "Privacidad"
+  },
+  "language_modal": {
+    "title": "Cambiar Idioma",
+    "search_placeholder": "Buscar idiomas...",
+    "no_results": "No se encontraron idiomas que coincidan con",
+    "footer_text": "Cambiar el idioma actualizará el contenido del sitio y puede afectar los precios y la disponibilidad de productos."
+  }
+}
