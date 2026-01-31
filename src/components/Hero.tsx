@@ -1,7 +1,5 @@
 import React from 'react';
 import { AiSearchBar } from './AiSearchBar';
-import { Zap } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
   onSearch: (query: string, model: string) => void;
@@ -10,8 +8,6 @@ interface Props {
 }
 
 export const Hero: React.FC<Props> = ({ onSearch, isSearching, hidden = false }) => {
-  const { t } = useLanguage();
-
   return (
     <div className="relative bg-gradient-to-b from-gray-900 via-gray-800 to-cryzo-dark text-white overflow-hidden pb-20">
       {/* Animated gradient background */}

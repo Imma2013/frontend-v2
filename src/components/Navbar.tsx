@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ShoppingCart, User, LogOut, Heart, LayoutDashboard, Box } from 'lucide-react';
+import { ShoppingCart, Heart, LayoutDashboard, Box, LogOut } from 'lucide-react';
 import { AiSearchBar } from './AiSearchBar';
 
 interface Props {

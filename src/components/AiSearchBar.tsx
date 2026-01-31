@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Sparkles, Send, Paperclip, X, Globe, Zap } from 'lucide-react';
+import { Sparkles, Send, Paperclip, X, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
