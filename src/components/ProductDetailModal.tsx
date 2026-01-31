@@ -158,7 +158,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
             <div className="flex items-baseline space-x-2 mb-8 border-b border-gray-100 pb-8">
                <span className="text-4xl font-black text-gray-900">${product.priceUsd}</span>
                <span className="text-sm text-gray-500 font-bold">/ unit</span>
-               <span className="text-[10px] text-gray-400 block mt-1 ml-auto">Bulk pricing available for orders > 100 units</span>
+               <span className="text-[10px] text-gray-400 block mt-1 ml-auto">Bulk pricing available for orders &gt; 100 units</span>
             </div>
 
             <div className="space-y-6 mb-8">
