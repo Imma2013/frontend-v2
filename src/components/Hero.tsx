@@ -38,10 +38,10 @@ export const Hero: React.FC<Props> = ({ onSearch, isSearching, hidden = false })
         
         {/* Subheadline */}
         <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-          Access verified wholesale lots directly from Hong Kong, Japan, USA, and Europe. Source phones in bulk with transparent pricing and instant logistics.
+          Access verified wholesale lots directly from USA Hub. Source phones in bulk with transparent pricing and instant logistics.
         </p>
 
-        {/* AI Search Bar - Hidden when terminal is open */}
+        {/* AI Search Bar */}
         <div className={`mb-8 transition-opacity duration-300 ${hidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <AiSearchBar onSearch={onSearch} isSearching={isSearching} variant="hero" />
         </div>

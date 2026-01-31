@@ -11,7 +11,8 @@ import { ContactPage } from './components/ContactPage';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { CartPage, type CartItem } from './components/CartPage';
 import { FullScreenSignup } from './components/ui/full-screen-signup';
-import { products as initialMockData, enhanceProductWithImage } from './services/dataService';
+import { products as initialMockData } from './services/dataService';
+import { LanguageProvider } from './contexts/LanguageContext';
 import type { Product } from './types';
 import { Sparkles } from 'lucide-react';
 
@@ -37,7 +38,7 @@ const App: React.FC = () => {
     const lowerQuery = q.toLowerCase();
     const terms = lowerQuery.split(' ').filter(t => t.length > 1);
     
-    // Search against the LIVE allProducts (which includes CSV uploads)
+    // Search against the LIVE allProducts
     const filtered = allProducts.filter(p => {
       const searchString = `${p.brand} ${p.model} ${p.grade} ${p.origin} ${p.storage}`.toLowerCase();
       return terms.some(term => searchString.includes(term));
@@ -78,10 +79,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     if (currentView === 'signup') return <FullScreenSignup />;
     if (currentView === 'cart') return <CartPage cartItems={cartItems} onRemove={(id)=>updateCartQty(id, -100)} onUpdateQty={updateCartQty} onBack={()=>setCurrentView('home')} onItemClick={setSelectedProduct} onCheckout={() => alert('Checkout not implemented yet')} />;
-    
-    // PASS THE UPDATE FUNCTION HERE
     if (currentView === 'profile') return <ProfileDashboard onNavigateHome={()=>setCurrentView('home')} onUpdateGlobalInventory={() => {}} />;
-    
     if (currentView === 'watchlist') return <Watchlist savedProducts={allProducts.filter(p=>savedIds.includes(p.id))} onToggleSaved={toggleSaved} onBack={()=>setCurrentView('home')} />;
     if (currentView === 'contact') return <ContactPage onBack={()=>setCurrentView('home')} />;
     if (['about','terms','privacy','shipping', 'grading'].includes(currentView)) return <LegalPages view={currentView as any} onBack={()=>setCurrentView('home')} />;
@@ -103,12 +101,14 @@ const App: React.FC = () => {
   };
 
   return (
+    <LanguageProvider>
       <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-        {currentView !== 'profile' && currentView !== 'signup' && <Navbar onNavigate={setCurrentView} cartCount={cartItems.reduce((a,b)=>a+b.quantity,0)} savedCount={savedIds.length} onSearch={handleAiSearch} />}
+        {currentView !== 'profile' && currentView !== 'signup' && <Navbar onNavigate={setCurrentView} cartCount={cartItems.reduce((a,b)=>a+b.quantity,0)} savedCount={savedIds.length} onSearch={handleAiSearch} isSearching={isSearching} />}
         {renderContent()}
         {currentView !== 'profile' && currentView !== 'signup' && <Footer onNavigate={setCurrentView} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct} onClose={()=>setSelectedProduct(null)} onAddToCart={addToCart} onViewCart={()=>{setSelectedProduct(null); setCurrentView('cart');}} onAiSearch={handleAiSearch}/>}
       </div>
+    </LanguageProvider>
   );
 };
 

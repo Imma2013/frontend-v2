@@ -1,20 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, ArrowRight, Plus, FileSpreadsheet, Image as ImageIcon, X, FileText, Mic } from 'lucide-react';
-
-const selectModel = (userQuery: string): string => {
-  // Simple search = Flash
-  if (userQuery.includes("show") || userQuery.includes("find")) {
-    return "google/gemini-2.0-flash-thinking-exp:free";
-  }
-  
-  // Complex question = Pro
-  if (userQuery.includes("compare") || userQuery.includes("best") || userQuery.includes("recommend")) {
-    return "google/gemini-2.5-pro-exp-03-25:free";
-  }
-  
-  // Default to Flash for speed
-  return "google/gemini-2.0-flash-thinking-exp:free";
-};
+import React, { useState, useRef } from 'react';
+import { Sparkles, Send, Paperclip, X, Globe, Zap } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
   onSearch: (query: string, model: string) => void;
@@ -23,160 +9,143 @@ interface Props {
   placeholder?: string;
 }
 
-interface UploadedFile {
-  name: string;
-  type: 'image' | 'excel' | 'file';
-}
+const selectModel = (userQuery: string): string => {
+  if (userQuery.includes("compare") || userQuery.includes("best") || userQuery.includes("recommend") || (userQuery.split(' ').length > 8)) {
+    return "google/gemini-2.5-pro-exp-03-25:free";
+  }
+  return "google/gemini-2.0-flash-thinking-exp:free";
+};
 
 export const AiSearchBar: React.FC<Props> = ({ onSearch, isSearching, variant = 'hero', placeholder }) => {
   const [query, setQuery] = useState('');
-  const [showUploadMenu, setShowUploadMenu] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [isListening, setIsListening] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (query.trim() || uploadedFiles.length > 0) {
-      const selectedModel = selectModel(query);
-      onSearch(query, selectedModel);
-      if (variant === 'terminal') setQuery(''); // Clear after send in chat mode
-    }
-  };
-
-  const handleFileUpload = (type: 'image' | 'excel' | 'file', name: string) => {
-    setUploadedFiles([...uploadedFiles, { name, type }]);
-    setShowUploadMenu(false);
-  };
-
-  const removeFile = (index: number) => {
-    setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
-  };
-
-  const toggleVoice = () => {
-    setIsListening(!isListening);
-    if (!isListening) {
-      setTimeout(() => {
-        setQuery(variant === 'terminal' ? "Calculate shipping to Riyadh" : "Show me iPhone 14 Pro Max prices in Dubai");
-        setIsListening(false);
-      }, 2000);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowUploadMenu(false);
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (query.trim() || imagePreview) {
+      const model = selectModel(query);
+      onSearch(query, model);
+      if (variant === 'terminal') {
+          setQuery('');
+          setImagePreview(null);
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    }
+  };
 
-  // Variant Styles
-  const containerClasses = {
-    hero: "w-full max-w-3xl mx-auto z-40 relative",
-    navbar: "w-full max-w-xl mx-auto z-40 relative scale-95",
-    terminal: "w-full z-40 relative",
-  } as const;
-
-  const inputClasses = {
-    hero: "flex-1 h-10 text-base border-none outline-none text-gray-700 placeholder-gray-400 bg-transparent font-medium min-w-[200px]",
-    navbar: "flex-1 h-8 text-sm border-none outline-none text-gray-700 placeholder-gray-400 bg-transparent font-medium min-w-[150px]",
-    terminal: "flex-1 h-10 text-sm border-none outline-none text-gray-700 placeholder-gray-500 bg-transparent font-mono min-w-[150px]",
-  } as const;
-
-  // Menu Direction Logic
-  const menuPositionClass = variant === 'terminal' 
-    ? "bottom-full mb-3" // Open UP for terminal
-    : "top-12";          // Open DOWN for Hero/Navbar
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImagePreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
-    <div className={containerClasses[variant]}>
+    <div className={`w-full transition-all duration-500 ${variant === 'hero' ? 'max-w-3xl mx-auto' : 'max-w-2xl'}`}>
       <form onSubmit={handleSubmit} className="relative group">
         {variant === 'hero' && (
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
         )}
         
-        <div className={`relative bg-white shadow-xl overflow-visible flex flex-col transition-all ${
-           variant === 'navbar' ? 'rounded-lg border border-gray-200' : 'rounded-2xl border border-gray-200'
+        <div className={`relative bg-white dark:bg-gray-900 shadow-xl flex flex-col border border-gray-200 dark:border-gray-800 transition-all ${
+           variant === 'navbar' ? 'rounded-xl' : 'rounded-2xl'
         }`}>
           
-          <div className={`flex items-center ${variant === 'navbar' ? 'p-1.5' : 'p-2.5'}`}>
-             <div className="pl-2 pr-2 text-blue-500">
-               {isSearching ? <Sparkles className="w-5 h-5 animate-pulse" /> : <Sparkles className="w-5 h-5" />}
-             </div>
-             
-             {/* Search Input Area */}
-             <div className="flex-1 flex items-center flex-wrap gap-2">
-                {uploadedFiles.map((file, idx) => (
-                  <div key={idx} className="flex items-center bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-lg border border-gray-200 animate-fade-in select-none">
-                    {file.type === 'excel' && <FileSpreadsheet className="w-3 h-3 mr-1.5 text-green-600" />}
-                    {file.type === 'image' && <ImageIcon className="w-3 h-3 mr-1.5 text-blue-600" />}
-                    {file.type === 'file' && <FileText className="w-3 h-3 mr-1.5 text-orange-600" />}
-                    <span className="truncate max-w-[80px]">{file.name}</span>
-                    <button type="button" onClick={() => removeFile(idx)} className="ml-1.5 text-gray-400 hover:text-red-500">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-                
-                <input
-                  type="text" 
-                  value={isListening ? "Listening..." : query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={placeholder || (uploadedFiles.length > 0 ? "Ask AI about this file..." : "Find iPhone 14 Pro Max...")}
-                  className={`${inputClasses[variant]} ${isListening ? 'animate-pulse text-blue-600' : ''}`}
-                />
-             </div>
-
-             <div className="flex items-center space-x-1 pl-2 border-l border-gray-100">
-                {/* Voice Button */}
-                <button 
-                   type="button"
-                   onClick={toggleVoice}
-                   className={`p-2 rounded-full transition-colors ${isListening ? 'bg-red-100 text-red-600' : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'}`}
-                >
-                   <Mic className={variant === 'navbar' ? 'w-4 h-4' : 'w-5 h-5'} />
-                </button>
-
-                {/* Plus / Upload Dropdown */}
-                <div className="relative" ref={menuRef}>
+          {/* Image Preview Area */}
+          <AnimatePresence>
+            {imagePreview && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="p-3 border-b border-gray-100 dark:border-gray-800"
+              >
+                <div className="relative inline-block">
+                  <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
                   <button 
                     type="button"
-                    onClick={() => setShowUploadMenu(!showUploadMenu)}
-                    className={`p-2 rounded-full transition-colors ${showUploadMenu ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'}`}
+                    onClick={() => setImagePreview(null)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
                   >
-                    <Plus className={`${variant === 'navbar' ? 'w-4 h-4' : 'w-5 h-5'} transition-transform ${showUploadMenu ? 'rotate-45' : ''}`} />
+                    <X className="w-3 h-3" />
                   </button>
-
-                  {showUploadMenu && (
-                    <div className={`absolute right-0 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden py-1 z-50 animate-fade-in ${menuPositionClass}`}>
-                       <p className="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
-                         Add Context
-                       </p>
-                       <button type="button" onClick={() => handleFileUpload('excel', 'Wholesale.xlsx')} className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center text-sm text-gray-700 transition-colors">
-                          <FileSpreadsheet className="w-4 h-4 mr-3 text-green-600" /> Excel Sheet
-                       </button>
-                       <button type="button" onClick={() => handleFileUpload('image', 'Screen.png')} className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center text-sm text-gray-700 transition-colors">
-                          <ImageIcon className="w-4 h-4 mr-3 text-blue-600" /> Image
-                       </button>
-                    </div>
-                  )}
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
+          <div className="flex items-center p-2">
+             <div className="pl-3 pr-2 text-blue-500">
+               {isSearching ? <Zap className="w-5 h-5 animate-pulse text-indigo-500" /> : <Sparkles className="w-5 h-5" />}
+             </div>
+             
+             <input
+               type="text" 
+               value={query}
+               onChange={(e) => setQuery(e.target.value)}
+               placeholder={placeholder || "Ask Cryzo about iPhone 16 Pro Max stocks..."}
+               className="flex-1 h-10 bg-transparent border-none outline-none text-gray-800 dark:text-gray-100 placeholder-gray-400 font-medium text-sm md:text-base"
+               onKeyDown={(e) => {
+                 if (e.key === 'Enter' && !e.shiftKey) {
+                   e.preventDefault();
+                   handleSubmit();
+                 }
+               }}
+             />
+
+             <div className="flex items-center space-x-1 pr-1">
+                {/* Image Upload */}
+                <button 
+                   type="button"
+                   onClick={() => fileInputRef.current?.click()}
+                   className={`p-2 rounded-xl transition-all ${imagePreview ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-blue-500 hover:bg-gray-50'}`}
+                   title="Upload price list screenshot"
+                >
+                   <Paperclip className="w-5 h-5" />
+                   <input 
+                     type="file" 
+                     ref={fileInputRef} 
+                     onChange={handleFileChange} 
+                     accept="image/*" 
+                     className="hidden" 
+                   />
+                </button>
+
+                {/* Send Button */}
                 <button 
                   type="submit" 
-                  disabled={(!query.trim() && uploadedFiles.length === 0) || isSearching}
-                  className={`rounded-xl p-2 ml-1 transition-all duration-200 flex items-center justify-center
-                    ${(query.trim() || uploadedFiles.length > 0) && !isSearching ? 'bg-blue-600 text-white shadow-lg hover:bg-blue-700' : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
+                  disabled={(!query.trim() && !imagePreview) || isSearching}
+                  className={`rounded-xl p-2 transition-all duration-300 flex items-center justify-center
+                    ${(query.trim() || imagePreview) && !isSearching 
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 hover:bg-blue-700' 
+                      : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
                 >
-                  <ArrowRight className={variant === 'navbar' ? 'w-4 h-4' : 'w-5 h-5'} />
+                  <Send className="w-4 h-4 md:w-5 h-5" />
                 </button>
              </div>
           </div>
         </div>
       </form>
+      
+      {variant === 'hero' && (
+        <div className="mt-4 flex flex-wrap justify-center gap-2 opacity-60">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-2 py-1">Try:</span>
+            {['iPhone 15 Pro 256GB', 'Compare iPhone 14 vs 15', 'Best bulk prices'].map(tip => (
+                <button 
+                    key={tip}
+                    type="button"
+                    onClick={() => setQuery(tip)}
+                    className="text-[10px] md:text-xs bg-gray-100 hover:bg-blue-50 hover:text-blue-600 px-3 py-1 rounded-full font-bold transition-all border border-gray-200"
+                >
+                    {tip}
+                </button>
+            ))}
+        </div>
+      )}
     </div>
   );
 };
