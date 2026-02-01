@@ -1,154 +1,143 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, User, Bot } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, Minimize2, Maximize2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
   id: string;
-  text: string;
   sender: 'user' | 'ai';
-  timestamp: Date;
+  text: string;
 }
 
 export const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [inputText, setInputText] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Hi! I'm the Cryzo AI Assistant. I can help with grading, shipping logistics, or payment options.",
-      sender: 'ai',
-      timestamp: new Date()
-    }
+    { id: '1', sender: 'ai', text: 'Hello! I am Cryzo Copilot. I can help you find products, check stock, or track orders. How can I assist you today?' }
   ]);
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const toggleChat = () => setIsOpen(!isOpen);
+
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!inputValue.trim()) return;
+
+    const userMsg: Message = { id: Date.now().toString(), sender: 'user', text: inputValue };
+    setMessages(prev => [...prev, userMsg]);
+    setInputValue('');
+    setIsTyping(true);
+
+    // Simulate AI response
+    setTimeout(() => {
+        const aiMsg: Message = { 
+            id: (Date.now() + 1).toString(), 
+            sender: 'ai', 
+            text: "I'm analyzing the wholesale inventory for you. Please hold on..." 
+        };
+        setMessages(prev => [...prev, aiMsg]);
+        setIsTyping(false);
+    }, 1500);
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isOpen]);
-
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMsg]);
-    setInputText('');
-
-    // AI Logic Simulation
-    setTimeout(() => {
-      let aiResponseText = "I'm analyzing our global logistics data for that...";
-      const lowerInput = userMsg.text.toLowerCase();
-
-      if (lowerInput.includes('human') || lowerInput.includes('person') || lowerInput.includes('call') || lowerInput.includes('support')) {
-        aiResponseText = "You can reach our human support team directly at +1 940-400-9316. We are available 24/7 for wholesale partners.";
-      } else if (lowerInput.includes('shipping') || lowerInput.includes('uae') || lowerInput.includes('cameroon')) {
-        aiResponseText = "We ship via FedEx International Priority. HK to UAE takes ~2 days. USA to Cameroon takes ~4-5 days via consolidated air freight.";
-      } else if (lowerInput.includes('price') || lowerInput.includes('cost')) {
-        aiResponseText = "Market prices fluctuate daily based on our 4 USA wholesalers sheets and HK auctions. Please use the main AI Search bar above to pull the latest live quotes.";
-      } else if (lowerInput.includes('pay') || lowerInput.includes('bank') || lowerInput.includes('wire') || lowerInput.includes('wise')) {
-        aiResponseText = "We accept multi-currency payments via Wise Business, Stripe (Cards), ACH Transfer, and International Wire Transfer. Reservations are held for 48 hours pending payment.";
-      }
-
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        text: aiResponseText,
-        sender: 'ai',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiMsg]);
-    }, 1000);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSend();
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping, isOpen]);
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-      {isOpen && (
-        <div className="bg-white rounded-2xl shadow-2xl w-80 sm:w-96 mb-4 overflow-hidden border border-gray-200 flex flex-col transition-all duration-200 ease-in-out h-[500px]">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 flex justify-between items-center text-white">
-            <div className="flex items-center space-x-2">
-              <div className="bg-white/20 p-1.5 rounded-full">
-                <Bot className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-sm">Cryzo Support AI</h3>
-                <p className="text-xs text-blue-100 flex items-center">
-                  <span className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></span>
-                  Online
-                </p>
-              </div>
-            </div>
-            <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1 rounded transition-colors">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
-                  msg.sender === 'user' 
-                    ? 'bg-blue-600 text-white rounded-br-none' 
-                    : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
-                }`}>
-                  {msg.text}
-                  {msg.text.includes('940-400-9316') && (
-                     <a href="tel:9404009316" className="block mt-2 bg-white/20 text-center py-1 rounded hover:bg-white/30 transition-colors font-bold underline">
-                       Call Now
-                     </a>
-                  )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="mb-4 w-[350px] md:w-[400px] h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden"
+          >
+            {/* Header */}
+            <div className="bg-gray-900 p-4 flex justify-between items-center text-white">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                  <Bot className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm">Cryzo Copilot</h3>
+                  <span className="text-[10px] text-green-400 flex items-center">
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1 animate-pulse"></span>
+                    Online
+                  </span>
                 </div>
               </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Area */}
-          <div className="p-4 bg-white border-t border-gray-100">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Ask about shipping, payment, or stock..."
-                className="w-full pl-4 pr-12 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none text-gray-800 placeholder-gray-500"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={handleKeyPress}
-              />
-              <button 
-                onClick={handleSend}
-                disabled={!inputText.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <Send className="w-4 h-4" />
-              </button>
+              <div className="flex items-center space-x-1">
+                 <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+                    <Minimize2 className="w-4 h-4" />
+                 </button>
+                 <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+                    <X className="w-5 h-5" />
+                 </button>
+              </div>
             </div>
-            <p className="text-[10px] text-gray-400 text-center mt-2">
-              Powered by Cryzo Intelligence • Live Inventory Access
-            </p>
-          </div>
-        </div>
-      )}
 
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 ${
-          isOpen ? 'bg-gray-700 rotate-90' : 'bg-blue-600 hover:bg-blue-700'
-        } text-white flex items-center justify-center`}
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
+              {messages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
+                    msg.sender === 'user' 
+                      ? 'bg-blue-600 text-white rounded-br-none' 
+                      : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'
+                  }`}>
+                    {msg.text}
+                  </div>
+                </div>
+              ))}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm">
+                    <div className="flex space-x-1">
+                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="p-3 bg-white border-t border-gray-100">
+              <form onSubmit={handleSendMessage} className="relative flex items-center">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Ask about inventory..."
+                  className="w-full bg-gray-100 text-sm text-gray-900 placeholder-gray-500 rounded-full pl-4 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+                />
+                <button 
+                  type="submit"
+                  disabled={!inputValue.trim()}
+                  className="absolute right-1.5 p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </form>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.button
+        onClick={toggleChat}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-colors z-50 ${
+            isOpen ? 'bg-gray-200 text-gray-600 hover:bg-gray-300' : 'bg-blue-600 text-white hover:bg-blue-700'
+        }`}
       >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
-      </button>
+        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-7 h-7" />}
+      </motion.button>
     </div>
   );
 };

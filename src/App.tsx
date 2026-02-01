@@ -11,6 +11,7 @@ import { ContactPage } from './components/ContactPage';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { CartPage, type CartItem } from './components/CartPage';
 import { FullScreenSignup } from './components/ui/full-screen-signup';
+import { ChatWidget } from './components/ChatWidget';
 import { products as initialMockData } from './services/dataService';
 import { LanguageProvider } from './contexts/LanguageContext';
 import type { Product } from './types';
@@ -92,7 +93,7 @@ const App: React.FC = () => {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {displayedProducts.map(p => (
-                <ProductCard key={p.id} product={p} onClick={()=>setSelectedProduct(p)} onQuickAdd={()=>addToCart(p)} isSaved={savedIds.includes(p.id)} onToggleSaved={toggleSaved} />
+                <ProductCard key={p.id} product={p} onClick={()=>setSelectedProduct(p)} onQuickAdd={(qty)=>addToCart(p, qty)} isSaved={savedIds.includes(p.id)} onToggleSaved={toggleSaved} />
             ))}
             </div>
         </div>
@@ -107,6 +108,7 @@ const App: React.FC = () => {
         {renderContent()}
         {currentView !== 'profile' && currentView !== 'signup' && <Footer onNavigate={setCurrentView} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct} onClose={()=>setSelectedProduct(null)} onAddToCart={addToCart} onViewCart={()=>{setSelectedProduct(null); setCurrentView('cart');}} onAiSearch={handleAiSearch}/>}
+        <ChatWidget />
       </div>
     </LanguageProvider>
   );
