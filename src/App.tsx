@@ -9,12 +9,12 @@ import { LegalPages } from './components/LegalPages';
 import { ProfileDashboard } from './components/ProfileDashboard';
 import { ContactPage } from './components/ContactPage';
 import { ProductDetailModal } from './components/ProductDetailModal';
-import { CartPage, type CartItem } from './components/CartPage';
+import { CartPage } from './components/CartPage';
 import { FullScreenSignup } from './components/ui/full-screen-signup';
 import { ChatWidget } from './components/ChatWidget';
 import { products as initialMockData } from './services/dataService';
 import { LanguageProvider } from './contexts/LanguageContext';
-import type { Product } from './types';
+import type { Product, CartItem } from './types';
 import { Sparkles } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -65,7 +65,9 @@ const App: React.FC = () => {
   const addToCart = (product: Product, qty = 5) => {
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
-      return existing ? prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + qty } : i) : [...prev, { ...product, quantity: qty }];
+      return existing 
+        ? prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + qty } : i) 
+        : [...prev, { ...product, quantity: qty }];
     });
   };
 
@@ -79,7 +81,7 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     if (currentView === 'signup') return <FullScreenSignup />;
-    if (currentView === 'cart') return <CartPage cartItems={cartItems} onRemove={(id)=>updateCartQty(id, -100)} onUpdateQty={updateCartQty} onBack={()=>setCurrentView('home')} onItemClick={setSelectedProduct} onCheckout={() => alert('Checkout not implemented yet')} />;
+    if (currentView === 'cart') return <CartPage cartItems={cartItems} onRemove={(id)=>updateCartQty(id, -100)} onUpdateQty={updateCartQty} onBack={()=>setCurrentView('home')} onItemClick={(item) => setSelectedProduct(item)} onCheckout={() => alert('Checkout not implemented yet')} />;
     if (currentView === 'profile') return <ProfileDashboard onNavigateHome={()=>setCurrentView('home')} onUpdateGlobalInventory={() => {}} />;
     if (currentView === 'watchlist') return <Watchlist savedProducts={allProducts.filter(p=>savedIds.includes(p.id))} onToggleSaved={toggleSaved} onBack={()=>setCurrentView('home')} />;
     if (currentView === 'contact') return <ContactPage onBack={()=>setCurrentView('home')} />;

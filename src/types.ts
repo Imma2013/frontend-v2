@@ -37,3 +37,7 @@ export interface Country {
 export const COUNTRIES: Country[] = [
   { code: 'US', name: 'USA', currency: 'USD', langCode: 'en' }
 ];
+
+export interface CartItem extends Product {
+  quantity: number;
+}
