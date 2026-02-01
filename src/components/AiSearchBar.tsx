@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { Sparkles, Send, Paperclip, X, Zap } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
   onSearch: (query: string, model: string) => void;
@@ -10,9 +9,17 @@ interface Props {
 }
 
 const selectModel = (userQuery: string): string => {
-  if (userQuery.includes("compare") || userQuery.includes("best") || userQuery.includes("recommend") || (userQuery.split(' ').length > 8)) {
+  // Simple search = Flash
+  if (userQuery.includes("show") || userQuery.includes("find")) {
+    return "google/gemini-2.0-flash-thinking-exp:free";
+  }
+  
+  // Complex question = Pro
+  if (userQuery.includes("compare") || userQuery.includes("best") || userQuery.includes("recommend")) {
     return "google/gemini-2.5-pro-exp-03-25:free";
   }
+  
+  // Default to Flash for speed
   return "google/gemini-2.0-flash-thinking-exp:free";
 };
 
@@ -56,27 +63,20 @@ export const AiSearchBar: React.FC<Props> = ({ onSearch, isSearching, variant = 
         }`}>
           
           {/* Image Preview Area */}
-          <AnimatePresence>
-            {imagePreview && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="p-3 border-b border-gray-100 dark:border-gray-800"
-              >
-                <div className="relative inline-block">
-                  <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
-                  <button 
-                    type="button"
-                    onClick={() => setImagePreview(null)}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {imagePreview && (
+            <div className="p-3 border-b border-gray-100 dark:border-gray-800">
+              <div className="relative inline-block">
+                <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
+                <button 
+                  type="button"
+                  onClick={() => setImagePreview(null)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center p-2">
              <div className="pl-3 pr-2 text-blue-500">
@@ -130,22 +130,6 @@ export const AiSearchBar: React.FC<Props> = ({ onSearch, isSearching, variant = 
           </div>
         </div>
       </form>
-      
-      {variant === 'hero' && (
-        <div className="mt-4 flex flex-wrap justify-center gap-2 opacity-60">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-2 py-1">Try:</span>
-            {['iPhone 15 Pro 256GB', 'Compare iPhone 14 vs 15', 'Best bulk prices'].map(tip => (
-                <button 
-                    key={tip}
-                    type="button"
-                    onClick={() => setQuery(tip)}
-                    className="text-[10px] md:text-xs bg-gray-100 hover:bg-blue-50 hover:text-blue-600 px-3 py-1 rounded-full font-bold transition-all border border-gray-200"
-                >
-                    {tip}
-                </button>
-            ))}
-        </div>
-      )}
     </div>
   );
 };
