@@ -106,7 +106,7 @@ const App: React.FC = () => {
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-        {currentView !== 'profile' && currentView !== 'signup' && <Navbar onNavigate={setCurrentView} cartCount={cartItems.reduce((a,b)=>a+b.quantity,0)} savedCount={savedIds.length} onSearch={handleAiSearch} isSearching={isSearching} />}
+        {currentView !== 'profile' && currentView !== 'signup' && <Navbar onNavigate={(view) => setCurrentView(view as any)} cartCount={cartItems.reduce((a,b)=>a+b.quantity,0)} savedCount={savedIds.length} onSearch={handleAiSearch} isSearching={isSearching} />}
         {renderContent()}
         {currentView !== 'profile' && currentView !== 'signup' && <Footer onNavigate={setCurrentView} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct} onClose={()=>setSelectedProduct(null)} onAddToCart={addToCart} onViewCart={()=>{setSelectedProduct(null); setCurrentView('cart');}} onAiSearch={handleAiSearch}/>}

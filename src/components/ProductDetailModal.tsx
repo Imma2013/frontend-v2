@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { type Product, ORIGIN_NAMES } from '../types';
-import { X, CheckCircle, Truck, Battery, Cpu, Smartphone, ShoppingCart, ChevronLeft, Star, Heart, Share2, Info, Package } from 'lucide-react';
+import { X, CheckCircle, Truck, Battery, Cpu, Smartphone, ShoppingCart, Star, Heart, Share2, Info, Package, ChevronLeft } from 'lucide-react';
 import { AiSearchBar } from './AiSearchBar';
 
 interface Props {
@@ -19,7 +19,9 @@ interface TerminalMessage {
 
 export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToCart, onAiSearch }) => {
   const [qty, setQty] = useState(5);
-  const gallery = [product.imageUrl];
+  const [selectedStorage, setSelectedStorage] = useState(product.storage);
+  const [selectedSim, setSelectedSim] = useState(product.simType || 'Physical + eSIM');
+  const [selectedGrade, setSelectedGrade] = useState(product.grade);
 
   const specs = [
     { label: 'Processor', value: 'A-Series Bionic', icon: <Cpu className="w-4 h-4" /> },
@@ -35,7 +37,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleAdd = () => {
-    onAddToCart(product, qty);
+    onAddToCart({ ...product, storage: selectedStorage, grade: selectedGrade, simType: selectedSim }, qty);
     setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'system', text: `Added ${qty} units to order.` }]);
   };
 
@@ -43,8 +45,8 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
     onAiSearch(query, model);
     setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'user', text: query }]);
     setTimeout(() => {
-      setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'ai', text: "Processing your request with Cryzo AI..." }]);
-    }, 600);
+        setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'ai', text: "Accessing inventory data for " + query + "..." }]);
+    }, 400);
   };
 
   useEffect(() => {
@@ -53,7 +55,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
 
   return (
     <div className="fixed inset-0 z-[100] flex justify-center items-center p-4 md:p-10 bg-black/70 backdrop-blur-md animate-fade-in pointer-events-auto">
-      <div className="relative w-full max-w-6xl bg-white h-full max-h-[90vh] shadow-2xl rounded-3xl overflow-hidden flex flex-col md:row border border-gray-200">
+      <div className="relative w-full max-w-6xl bg-white h-full max-h-[90vh] shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row border border-gray-200">
         
         {/* Detail Side */}
         <div className="flex-1 bg-white border-r border-gray-100 flex flex-col overflow-hidden">
@@ -64,6 +66,9 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
             <div className="flex items-center space-x-3">
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors"><Share2 className="w-5 h-5 text-gray-400" /></button>
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors"><Heart className="w-5 h-5 text-gray-400" /></button>
+              <button onClick={onClose} className="p-2 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors">
+                <X className="w-6 h-6" />
+              </button>
             </div>
           </div>
 
@@ -77,6 +82,39 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
                   </div>
                   <span className="text-sm font-bold text-gray-400">Verified Batch #{product.modelNumber}</span>
                </div>
+            </div>
+
+            {/* Amazon-style config */}
+            <div className="space-y-6 mb-10">
+                <div>
+                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Storage Capacity</h4>
+                    <div className="flex flex-wrap gap-2">
+                        {['128GB', '256GB', '512GB', '1TB'].map(s => (
+                            <button 
+                                key={s}
+                                onClick={() => setSelectedStorage(s)}
+                                className={`px-6 py-2.5 rounded-xl border-2 font-bold transition-all ${selectedStorage === s ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-100 hover:border-gray-200 text-gray-500'}`}
+                            >
+                                {s}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">SIM Configuration</h4>
+                    <div className="flex flex-wrap gap-2">
+                        {['Physical + eSIM', 'eSIM Only', 'Dual SIM'].map(sim => (
+                            <button 
+                                key={sim}
+                                onClick={() => setSelectedSim(sim as any)}
+                                className={`px-6 py-2.5 rounded-xl border-2 font-bold transition-all ${selectedSim === sim ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-100 hover:border-gray-200 text-gray-500'}`}
+                            >
+                                {sim}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
@@ -95,7 +133,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
 
             <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100/50 space-y-4">
                <div className="flex items-center text-blue-800 text-sm font-bold">
-                 <Truck className="w-5 h-5 mr-3 text-blue-500" /> Logistics: USA Hub to Global via FedEx Priority
+                 <Truck className="w-5 h-5 mr-3 text-blue-500" /> Shipping: Middle East / Europe / Asia (3-5 Days) | Africa (5-6 Days)
                </div>
                <div className="flex items-center text-blue-800 text-sm font-bold">
                  <CheckCircle className="w-5 h-5 mr-3 text-blue-500" /> 100% Secure B2B Escrow Transaction
@@ -113,7 +151,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
                 <div>
                     <span className="text-[10px] font-bold text-gray-400 uppercase block mb-2">Selected Specs</span>
                     <div className="flex justify-between items-center">
-                        <span className="text-sm font-black text-gray-800">{product.storage} | {product.grade}</span>
+                        <span className="text-sm font-black text-gray-800">{selectedStorage} | {selectedGrade}</span>
                         <span className="text-xs font-bold text-green-600">In Stock</span>
                     </div>
                 </div>
@@ -144,7 +182,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center"
                     >
                         <ShoppingCart className="w-5 h-5 mr-2" />
-                        Place Order
+                        Add to Order
                     </button>
                 </div>
             </div>
@@ -169,11 +207,6 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
              />
           </div>
         </div>
-
-        {/* Close Button Mobile */}
-        <button onClick={onClose} className="absolute top-4 right-4 md:hidden bg-white/80 p-2 rounded-full shadow-lg backdrop-blur-md">
-          <X className="w-6 h-6" />
-        </button>
       </div>
     </div>
   );
