@@ -67,6 +67,7 @@ const App: React.FC = () => {
             origin: p.phoneOrigin || p.origin || 'US',
             imageUrl: p.imageUrl || '',
             simType: p.simType || 'Physical + eSIM',
+            variations: p.variations || [],
           }));
           setAllProducts(normalized);
           setDisplayedProducts(normalized);
@@ -123,6 +124,7 @@ const App: React.FC = () => {
           origin: p.phoneOrigin || p.origin || 'US',
           imageUrl: p.imageUrl || '',
           simType: p.simType || 'Physical + eSIM',
+          variations: p.variations || [],
         }));
         setDisplayedProducts(normalized);
       } else if (response.success && response.products?.length === 0) {

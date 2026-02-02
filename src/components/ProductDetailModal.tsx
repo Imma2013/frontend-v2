@@ -18,7 +18,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
   const availableColors = [...new Set(variations.map(v => v.color))];
   const availableGrades = [...new Set(variations.map(v => v.grade))];
 
-  const [qty, setQty] = useState(5);
+  const [qty, setQty] = useState(3);
   const [selectedStorage, setSelectedStorage] = useState(availableStorages[0] || product.storage);
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || product.color || 'Black');
   const [selectedGrade, setSelectedGrade] = useState(availableGrades[0] || product.grade);
@@ -225,7 +225,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
                   </div>
                   <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
                     <button
-                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      onClick={() => setQty(Math.max(3, qty - 1))}
                       className="w-9 h-9 flex items-center justify-center font-bold text-lg text-gray-400 hover:text-cyan-400 transition-colors"
                     >
                       -

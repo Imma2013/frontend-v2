@@ -25,6 +25,15 @@ export interface SearchFilters {
   origin?: string | null;
 }
 
+export interface ProductVariation {
+  storage: string;
+  grade: string;
+  color: string;
+  price: number;
+  stock: number;
+  origin: string;
+}
+
 export interface Product {
   _id: string;
   id?: string;
@@ -44,6 +53,7 @@ export interface Product {
   modelNumber?: string;
   simType?: string;
   imageUrl?: string;
+  variations?: ProductVariation[];
 }
 
 // AI-Powered Search (uses Gemini)
@@ -166,6 +176,7 @@ export const normalizeProduct = (product: Product): Product => {
     stock: product.quantity || product.stock || 0,
     origin: product.phoneOrigin || product.origin || 'US',
     imageUrl: product.imageUrl || '',
+    variations: product.variations || [],
   };
 };
 

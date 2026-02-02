@@ -58,7 +58,7 @@ export const ProductCard: React.FC<Props> = ({
   const availableGrades = [...new Set(variations.map(v => v.grade))];
   const availableColors = [...new Set(variations.map(v => v.color))];
 
-  const [qty, setQty] = useState(5);
+  const [qty, setQty] = useState(3);
   const [selectedStorage, setSelectedStorage] = useState(product.storage);
   const [selectedGrade, setSelectedGrade] = useState<string>(variations[0]?.grade || product.grade);
   const [selectedColor, setSelectedColor] = useState(variations[0]?.color || product.color || 'Black');
@@ -236,7 +236,7 @@ export const ProductCard: React.FC<Props> = ({
             <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1 text-right">Quantity</span>
             <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
               <button
-                onClick={() => setQty(Math.max(5, qty - 1))}
+                onClick={() => setQty(Math.max(3, qty - 1))}
                 className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-cyan-400 hover:bg-white/10 rounded-lg transition-all"
               >
                 <Minus className="w-4 h-4" />
