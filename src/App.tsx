@@ -1,13 +1,16 @@
 // FILE: src/App.tsx
 import React, { useState, useEffect } from 'react';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { auth } from './services/firebase';
 import { HomePage } from './components/HomePage';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { CartPage } from './components/CartPage';
 import { Watchlist } from './components/Watchlist';
 import { ProfileDashboard } from './components/ProfileDashboard';
 import { ChatWidget } from './components/ChatWidget';
+import { FullScreenSignup } from './components/ui/full-screen-signup';
 import { products as mockProducts } from './services/dataService';
-import { aiSearch, getProducts, normalizeProduct, type SearchResponse } from './services/api';
+import { aiSearch, getProducts, type SearchResponse } from './services/api';
 import { LanguageProvider } from './contexts/LanguageContext';
 import type { Product, CartItem } from './types';
 
@@ -15,6 +18,10 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home');
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Auth state
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   // Products state
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -30,6 +37,15 @@ const App: React.FC = () => {
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
+  // Listen to auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Fetch products on mount
   useEffect(() => {
     const fetchProducts = async () => {
@@ -37,10 +53,9 @@ const App: React.FC = () => {
       try {
         const response = await getProducts();
         if (response.products && response.products.length > 0) {
-          // Normalize backend products to frontend format
           const normalized = response.products.map((p: any) => ({
             id: p._id || p.id,
-            brand: p.brand,
+            brand: p.brand || 'Apple',
             model: p.model,
             modelNumber: p.modelNumber || p.sku || '',
             grade: p.grade || 'Refurb A',
@@ -55,7 +70,6 @@ const App: React.FC = () => {
           setAllProducts(normalized);
           setDisplayedProducts(normalized);
         } else {
-          // Fallback to mock data if backend is empty
           console.log('Using mock data (backend empty or unavailable)');
           setAllProducts(mockProducts);
           setDisplayedProducts(mockProducts);
@@ -72,29 +86,32 @@ const App: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // AI Search handler - connected to Gemini
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setCurrentView('home');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  // AI Search handler
   const handleAiSearch = async (query: string, image?: string | null) => {
     setIsSearching(true);
     setAiMessage(null);
     setAiSuggestion(null);
 
-    console.log(`🔍 Searching: "${query}"`);
-
     try {
       const response: SearchResponse = await aiSearch(query, image);
-
-      console.log(`✅ AI Response:`, response);
-
-      // Update UI with AI response
       setLastModel(response.model);
       setAiMessage(response.message || null);
       setAiSuggestion(response.suggestion || null);
 
       if (response.success && response.products && response.products.length > 0) {
-        // Normalize and display products from API
         const normalized = response.products.map((p: any) => ({
           id: p._id || p.id,
-          brand: p.brand,
+          brand: p.brand || 'Apple',
           model: p.model,
           modelNumber: p.modelNumber || p.sku || '',
           grade: p.grade || 'Refurb A',
@@ -108,15 +125,12 @@ const App: React.FC = () => {
         }));
         setDisplayedProducts(normalized);
       } else if (response.success && response.products?.length === 0) {
-        // No results - show message but keep current products
         setAiMessage(response.message || 'No products found matching your search.');
       } else {
-        // Error - fall back to local search
         handleLocalSearch(query);
       }
     } catch (error) {
       console.error('AI Search failed:', error);
-      // Fallback to local search
       handleLocalSearch(query);
     } finally {
       setIsSearching(false);
@@ -176,21 +190,30 @@ const App: React.FC = () => {
   };
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400 font-medium">Loading inventory...</p>
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400 font-medium">Loading...</p>
         </div>
       </div>
+    );
+  }
+
+  // Auth page
+  if (currentView === 'signup') {
+    return (
+      <FullScreenSignup
+        onSuccess={() => setCurrentView('home')}
+        onBack={() => setCurrentView('home')}
+      />
     );
   }
 
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-gray-950">
-        {/* Main content based on current view */}
         {currentView === 'home' && (
           <HomePage
             products={displayedProducts}
@@ -204,6 +227,10 @@ const App: React.FC = () => {
             aiSuggestion={aiSuggestion}
             lastModel={lastModel}
             onResetSearch={handleResetSearch}
+            user={user}
+            onLogout={handleLogout}
+            onNavigate={setCurrentView}
+            cartCount={cartItems.length}
           />
         )}
 
@@ -228,6 +255,7 @@ const App: React.FC = () => {
         {currentView === 'profile' && (
           <ProfileDashboard
             onBack={() => setCurrentView('home')}
+            user={user}
           />
         )}
 

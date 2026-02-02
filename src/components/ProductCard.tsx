@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { type Product, ORIGIN_FLAGS, ORIGIN_NAMES, type Grade } from '../types';
-import { ShoppingCart, Signal, ShieldCheck, Box, Package, Cpu, ArrowRight } from 'lucide-react';
+import {
+  Signal,
+  ShieldCheck,
+  Package,
+  Plus,
+  Minus,
+  Heart,
+  Bookmark,
+  ArrowUpRight,
+  Cpu
+} from 'lucide-react';
 
 interface Props {
   product: Product;
@@ -10,131 +21,239 @@ interface Props {
   onQuickAdd?: (qty: number) => void;
 }
 
-const STORAGE_OPTIONS = ['128GB', '256GB', '512GB', '1TB'];
+const STORAGE_OPTIONS = ['64GB', '128GB', '256GB', '512GB', '1TB'];
 const GRADE_OPTIONS: Grade[] = ['Brand New', 'Refurb A', 'Refurb B', 'Refurb C', 'Refurb D'];
+const COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Purple', 'Gold', 'Silver', 'Green', 'Red'];
 
-export const ProductCard: React.FC<Props> = ({ product, onClick, onQuickAdd }) => {
+// Grade color mapping
+const gradeColors: Record<Grade, { bg: string; text: string; border: string }> = {
+  'Brand New': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' },
+  'Refurb A': { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
+  'Refurb B': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
+  'Refurb C': { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30' },
+  'Refurb D': { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30' },
+};
+
+// Origin flag mapping
+const originFlags: Record<string, string> = {
+  US: '🇺🇸',
+  JP: '🇯🇵',
+  HK: '🇭🇰',
+  EU: '🇪🇺',
+  AU: '🇦🇺',
+  CA: '🇨🇦',
+};
+
+export const ProductCard: React.FC<Props> = ({
+  product,
+  isSaved = false,
+  onToggleSaved,
+  onClick,
+  onQuickAdd
+}) => {
   const [qty, setQty] = useState(5);
   const [selectedStorage, setSelectedStorage] = useState(product.storage);
   const [selectedGrade, setSelectedGrade] = useState<Grade>(product.grade);
+  const [selectedColor, setSelectedColor] = useState(product.color || 'Black');
   const [currentPrice, setCurrentPrice] = useState(product.priceUsd);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Simple price simulation based on storage/grade
+  // Dynamic pricing based on configuration
   useEffect(() => {
     let modifier = 0;
-    if (selectedStorage === '256GB') modifier += 50;
-    if (selectedStorage === '512GB') modifier += 120;
-    if (selectedStorage === '1TB') modifier += 250;
 
+    // Storage modifiers
+    const storageIndex = STORAGE_OPTIONS.indexOf(selectedStorage);
+    if (storageIndex > 0) modifier += storageIndex * 60;
+
+    // Grade modifiers
     if (selectedGrade === 'Brand New') modifier += 100;
-    if (selectedGrade === 'Refurb B') modifier -= 40;
-    if (selectedGrade === 'Refurb C') modifier -= 80;
-    
-    setCurrentPrice(product.priceUsd + modifier);
+    if (selectedGrade === 'Refurb A') modifier += 0;
+    if (selectedGrade === 'Refurb B') modifier -= 50;
+    if (selectedGrade === 'Refurb C') modifier -= 100;
+    if (selectedGrade === 'Refurb D') modifier -= 150;
+
+    setCurrentPrice(Math.max(100, product.priceUsd + modifier));
   }, [selectedStorage, selectedGrade, product.priceUsd]);
 
+  const lotTotal = currentPrice * qty;
+  const gradeStyle = gradeColors[selectedGrade] || gradeColors['Refurb A'];
+
   return (
-    <div 
-      className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group h-full"
-      onClick={onClick}
+    <motion.div
+      className="relative bg-gray-900/50 backdrop-blur-sm border border-white/5 rounded-2xl overflow-hidden group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
     >
-      {/* Header Info */}
-      <div className="p-4 border-b border-gray-50 bg-gray-50/50 flex justify-between items-start">
-        <div className="flex items-center space-x-2">
-            <div className="bg-blue-600 text-white p-1.5 rounded-lg shadow-sm">
-                <Box className="w-4 h-4" />
+      {/* Hover glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+      {/* Header */}
+      <div className="relative p-4 border-b border-white/5">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            {/* Brand icon */}
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 border border-cyan-500/20 flex items-center justify-center">
+              <Cpu className="w-5 h-5 text-cyan-400" />
             </div>
             <div>
-                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider block leading-none mb-1">
-                    {product.brand}
-                </span>
-                <h3 className="text-sm font-bold text-gray-900 leading-none">{product.model}</h3>
+              <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest block mb-0.5">
+                {product.brand}
+              </span>
+              <h3 className="text-sm font-bold text-white leading-tight">{product.model}</h3>
             </div>
+          </div>
+
+          {/* Origin & Save */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-lg border border-white/10">
+              <span className="text-sm">{originFlags[product.origin] || '🌍'}</span>
+              <span className="text-[10px] font-bold text-gray-400">{product.origin}</span>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSaved?.(product.id);
+              }}
+              className={`p-2 rounded-lg transition-all ${
+                isSaved
+                  ? 'bg-cyan-500/20 text-cyan-400'
+                  : 'bg-white/5 text-gray-500 hover:text-cyan-400 hover:bg-white/10'
+              }`}
+            >
+              <Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} />
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col items-end">
-            <div className="flex items-center space-x-1 bg-white border border-gray-200 px-1.5 py-0.5 rounded text-[10px] font-bold text-gray-700">
-                <img src={`https://flagcdn.com/w20/us.png`} alt="US" className="w-3 h-auto" />
-                <span>US HUB</span>
-            </div>
+
+        {/* Status badges */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${gradeStyle.bg} ${gradeStyle.text} ${gradeStyle.border}`}>
+            <ShieldCheck className="w-3 h-3" />
+            {selectedGrade}
+          </span>
+          <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">
+            <Signal className="w-3 h-3" />
+            {product.stock} in stock
+          </span>
         </div>
       </div>
 
-      <div className="p-4 flex-1 flex flex-col space-y-4">
-        {/* Verification Badges */}
-        <div className="flex flex-wrap gap-2">
-            <span className="flex items-center text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
-                <Signal className="w-3 h-3 mr-1" /> Active Stock
-            </span>
-            <span className="flex items-center text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
-                <ShieldCheck className="w-3 h-3 mr-1" /> Inspected
-            </span>
+      {/* Configuration Section */}
+      <div className="p-4 space-y-4" onClick={(e) => e.stopPropagation()}>
+        {/* Variant selectors - Amazon style */}
+        <div className="grid grid-cols-3 gap-3">
+          {/* Storage */}
+          <div className="space-y-1.5">
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Storage</label>
+            <select
+              value={selectedStorage}
+              onChange={(e) => setSelectedStorage(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-lg px-2 py-2 focus:outline-none focus:border-cyan-500/50 cursor-pointer appearance-none"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
+            >
+              {STORAGE_OPTIONS.map((s) => (
+                <option key={s} value={s} className="bg-gray-900">{s}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Grade */}
+          <div className="space-y-1.5">
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Grade</label>
+            <select
+              value={selectedGrade}
+              onChange={(e) => setSelectedGrade(e.target.value as Grade)}
+              className="w-full bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-lg px-2 py-2 focus:outline-none focus:border-cyan-500/50 cursor-pointer appearance-none"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
+            >
+              {GRADE_OPTIONS.map((g) => (
+                <option key={g} value={g} className="bg-gray-900">{g}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Color */}
+          <div className="space-y-1.5">
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Color</label>
+            <select
+              value={selectedColor}
+              onChange={(e) => setSelectedColor(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-lg px-2 py-2 focus:outline-none focus:border-cyan-500/50 cursor-pointer appearance-none"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
+            >
+              {COLOR_OPTIONS.map((c) => (
+                <option key={c} value={c} className="bg-gray-900">{c}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Technical Data Grid */}
-        <div className="grid grid-cols-2 gap-3" onClick={(e) => e.stopPropagation()}>
-            <div className="space-y-1">
-                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Capacity</label>
-                <select 
-                    value={selectedStorage}
-                    onChange={(e) => setSelectedStorage(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 text-xs font-bold rounded p-1.5 focus:ring-1 focus:ring-blue-500 outline-none"
-                >
-                    {STORAGE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
+        {/* Pricing */}
+        <div className="flex items-end justify-between pt-3 border-t border-white/5">
+          <div>
+            <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Unit Price</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-black text-white">${currentPrice}</span>
+              <span className="text-xs text-gray-500">USD</span>
             </div>
-            <div className="space-y-1">
-                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Grade</label>
-                <select 
-                    value={selectedGrade}
-                    onChange={(e) => setSelectedGrade(e.target.value as Grade)}
-                    className="w-full bg-gray-50 border border-gray-200 text-xs font-bold rounded p-1.5 focus:ring-1 focus:ring-blue-500 outline-none"
-                >
-                    {GRADE_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
+          </div>
+
+          {/* Quantity control */}
+          <div>
+            <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1 text-right">Quantity</span>
+            <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
+              <button
+                onClick={() => setQty(Math.max(5, qty - 1))}
+                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-cyan-400 hover:bg-white/10 rounded-lg transition-all"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="w-10 text-center text-sm font-bold text-white">{qty}</span>
+              <button
+                onClick={() => setQty(Math.min(product.stock, qty + 1))}
+                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-cyan-400 hover:bg-white/10 rounded-lg transition-all"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
             </div>
+          </div>
         </div>
 
-        {/* Pricing Section */}
-        <div className="pt-2 mt-auto border-t border-gray-100">
-            <div className="flex justify-between items-end">
-                <div>
-                    <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Unit Cost</span>
-                    <div className="flex items-baseline space-x-1">
-                        <span className="text-2xl font-black text-gray-900">${currentPrice}</span>
-                        <span className="text-[10px] font-bold text-gray-400">USD</span>
-                    </div>
-                </div>
-                <div className="text-right">
-                    <span className="text-[10px] font-bold text-gray-400 block mb-1">Lot Quantity</span>
-                    <div className="flex items-center bg-gray-100 rounded-lg p-1" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => setQty(Math.max(5, qty - 1))} className="w-6 h-6 flex items-center justify-center hover:text-blue-600 transition-colors">
-                            <span className="font-bold text-lg">−</span>
-                        </button>
-                        <span className="w-8 text-center text-xs font-black text-gray-900">{qty}</span>
-                        <button onClick={() => setQty(Math.min(lotStock(product.stock), qty + 1))} className="w-6 h-6 flex items-center justify-center hover:text-blue-600 transition-colors">
-                            <span className="font-bold text-lg">+</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+        {/* Lot total */}
+        <div className="flex items-center justify-between py-2 px-3 bg-cyan-500/5 border border-cyan-500/10 rounded-xl">
+          <span className="text-xs font-semibold text-gray-400">Lot Total ({qty} units)</span>
+          <span className="text-lg font-black text-cyan-400">${lotTotal.toLocaleString()}</span>
         </div>
       </div>
 
-      {/* Action Button */}
-      <button 
-        onClick={(e) => {
+      {/* Action buttons */}
+      <div className="flex gap-2 p-4 pt-0">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick?.();
+          }}
+          className="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-sm font-semibold text-gray-300 hover:text-white transition-all flex items-center justify-center gap-2"
+        >
+          View Details
+          <ArrowUpRight className="w-4 h-4" />
+        </button>
+        <button
+          onClick={(e) => {
             e.stopPropagation();
             onQuickAdd?.(qty);
-        }}
-        className="w-full bg-gray-900 text-white font-bold py-3 text-xs uppercase tracking-widest flex items-center justify-center space-x-2 group-hover:bg-blue-600 transition-colors"
-      >
-        <Package className="w-4 h-4" />
-        <span>Add to Order</span>
-      </button>
-    </div>
+          }}
+          className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-gray-950 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-400/30"
+        >
+          <Package className="w-4 h-4" />
+          Add to Order
+        </button>
+      </div>
+    </motion.div>
   );
 };
-
-const lotStock = (stock: number) => stock > 0 ? stock : 0;
 
 export default ProductCard;
