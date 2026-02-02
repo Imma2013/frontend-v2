@@ -215,14 +215,18 @@ export const HomePage: React.FC<HomePageProps> = ({
       <nav className="sticky top-0 z-50 bg-gray-950/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate?.('home')}>
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center">
-                <Package className="h-5 w-5 text-gray-950" />
+            {/* Logo - Iconic Crystal C */}
+            <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => onNavigate?.('home')}>
+              <div className="w-9 h-9 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-cyan-500 to-blue-600 rounded-xl transform rotate-45 shadow-lg shadow-cyan-500/25" />
+                <div className="absolute inset-[2px] bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg transform rotate-45" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-cyan-400 font-black text-base">C</span>
+                </div>
               </div>
-              <div>
-                <span className="text-lg font-black tracking-tighter">CRYZO</span>
-                <span className="hidden sm:inline text-[9px] font-bold text-gray-500 uppercase tracking-widest ml-1">Wholesale</span>
+              <div className="flex flex-col leading-none">
+                <span className="text-lg font-black tracking-tight">CRYZO</span>
+                <span className="text-[8px] tracking-[0.2em] text-cyan-400 font-bold uppercase">Wholesale</span>
               </div>
             </div>
 
@@ -320,18 +324,23 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="max-w-5xl mx-auto text-center relative z-10">
           {/* Logo & Badge */}
           <motion.div
-            className="flex items-center justify-center gap-3 mb-8"
+            className="flex items-center justify-center gap-4 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
-              <Package className="h-6 w-6 text-gray-950" />
+            {/* Iconic Crystal C Logo */}
+            <div className="w-14 h-14 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-cyan-500 to-blue-600 rounded-2xl transform rotate-45 shadow-xl shadow-cyan-500/30" />
+              <div className="absolute inset-[3px] bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl transform rotate-45" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-cyan-400 font-black text-2xl">C</span>
+              </div>
             </div>
             <div className="text-left">
-              <span className="text-2xl font-black tracking-tighter">CRYZO</span>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Wholesale</span>
+              <span className="text-3xl font-black tracking-tight">CRYZO</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-[0.2em]">Wholesale</span>
                 <span className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-400 text-[9px] font-bold rounded">AI-POWERED</span>
               </div>
             </div>

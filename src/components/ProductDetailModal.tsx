@@ -1,210 +1,262 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { type Product, ORIGIN_NAMES } from '../types';
-import { X, CheckCircle, Truck, Battery, Cpu, Smartphone, ShoppingCart, Star, Heart, Share2, Info, Package, ChevronLeft } from 'lucide-react';
-import { AiSearchBar } from './AiSearchBar';
+import React, { useState } from 'react';
+import { type Product } from '../types';
+import { X, CheckCircle, Truck, Battery, Cpu, Smartphone, ShoppingCart, Star, Heart, Package, ChevronLeft, Globe } from 'lucide-react';
 
 interface Props {
   product: Product;
   onClose: () => void;
   onAddToCart: (product: Product, qty: number) => void;
   onViewCart: () => void;
-  onAiSearch: (query: string, model: string) => void;
+  onAiSearch?: (query: string, model: string) => void;
 }
 
-interface TerminalMessage {
-  id: string;
-  sender: 'user' | 'system' | 'ai';
-  text: string;
-}
+export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToCart }) => {
+  const variations = product.variations || [];
 
-export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToCart, onAiSearch }) => {
+  // Get available options from actual variations
+  const availableStorages = [...new Set(variations.map(v => v.storage))];
+  const availableColors = [...new Set(variations.map(v => v.color))];
+  const availableGrades = [...new Set(variations.map(v => v.grade))];
+
   const [qty, setQty] = useState(5);
-  const [selectedStorage, setSelectedStorage] = useState(product.storage);
-  const [selectedSim, setSelectedSim] = useState(product.simType || 'Physical + eSIM');
-  const [selectedGrade, setSelectedGrade] = useState(product.grade);
+  const [selectedStorage, setSelectedStorage] = useState(availableStorages[0] || product.storage);
+  const [selectedColor, setSelectedColor] = useState(availableColors[0] || product.color || 'Black');
+  const [selectedGrade, setSelectedGrade] = useState(availableGrades[0] || product.grade);
+  const [isSaved, setIsSaved] = useState(false);
+
+  // Find current variation
+  const currentVariation = variations.find(v =>
+    v.storage === selectedStorage && v.color === selectedColor
+  ) || variations[0];
+
+  const currentPrice = currentVariation?.price || product.priceUsd;
+  const currentStock = currentVariation?.stock || product.stock;
 
   const specs = [
     { label: 'Processor', value: 'A-Series Bionic', icon: <Cpu className="w-4 h-4" /> },
-    { label: 'Network', value: 'Unlocked / Global', icon: <Smartphone className="w-4 h-4" /> },
+    { label: 'Network', value: 'Unlocked / Global', icon: <Globe className="w-4 h-4" /> },
     { label: 'Battery', value: '85%+ Guaranteed', icon: <Battery className="w-4 h-4" /> },
     { label: 'Packaging', value: 'Bulk / White Box', icon: <Package className="w-4 h-4" /> },
   ];
 
-  const [messages, setMessages] = useState<TerminalMessage[]>([
-    { id: '0', sender: 'system', text: `Connected to Cryzo Data Hub` },
-    { id: '1', sender: 'ai', text: `Analyzing stock for ${product.model}. How can I assist with your wholesale order?` }
-  ]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const handleAdd = () => {
-    onAddToCart({ ...product, storage: selectedStorage, grade: selectedGrade, simType: selectedSim }, qty);
-    setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'system', text: `Added ${qty} units to order.` }]);
+    onAddToCart({
+      ...product,
+      storage: selectedStorage,
+      grade: selectedGrade,
+      color: selectedColor,
+      priceUsd: currentPrice,
+      stock: currentStock,
+    }, qty);
   };
-
-  const handleAiCommand = (query: string, model: string) => {
-    onAiSearch(query, model);
-    setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'user', text: query }]);
-    setTimeout(() => {
-        setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'ai', text: "Accessing inventory data for " + query + "..." }]);
-    }, 400);
-  };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex justify-center items-center p-4 md:p-10 bg-black/70 backdrop-blur-md animate-fade-in pointer-events-auto">
-      <div className="relative w-full max-w-6xl bg-white h-full max-h-[90vh] shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row border border-gray-200">
-        
+    <div
+      className="fixed inset-0 z-[100] flex justify-center items-center p-4 md:p-10 bg-black/80 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-5xl bg-gray-950 max-h-[90vh] shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row border border-white/10"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Detail Side */}
-        <div className="flex-1 bg-white border-r border-gray-100 flex flex-col overflow-hidden">
-          <div className="p-4 flex items-center justify-between border-b border-gray-50 bg-white sticky top-0 z-10">
-            <button onClick={onClose} className="flex items-center text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="p-4 flex items-center justify-between border-b border-white/5 bg-gray-950 sticky top-0 z-10">
+            <button onClick={onClose} className="flex items-center text-sm font-bold text-gray-400 hover:text-white transition-colors">
               <ChevronLeft className="w-5 h-5 mr-1" /> Back to Inventory
             </button>
-            <div className="flex items-center space-x-3">
-              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors"><Share2 className="w-5 h-5 text-gray-400" /></button>
-              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors"><Heart className="w-5 h-5 text-gray-400" /></button>
-              <button onClick={onClose} className="p-2 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors">
-                <X className="w-6 h-6" />
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setIsSaved(!isSaved)}
+                className={`p-2 rounded-xl transition-colors ${isSaved ? 'bg-pink-500/20 text-pink-400' : 'hover:bg-white/5 text-gray-500 hover:text-white'}`}
+              >
+                <Heart className="w-5 h-5" fill={isSaved ? 'currentColor' : 'none'} />
+              </button>
+              <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-gray-500 hover:text-white">
+                <X className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-6 md:p-8">
+            {/* Title */}
             <div className="mb-8">
-               <span className="text-xs font-black text-blue-600 uppercase tracking-widest block mb-2">{product.brand}</span>
-               <h2 className="text-4xl font-black text-gray-900 leading-tight mb-4">{product.model}</h2>
-               <div className="flex items-center space-x-4">
-                  <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
-                  </div>
-                  <span className="text-sm font-bold text-gray-400">Verified Batch #{product.modelNumber}</span>
-               </div>
-            </div>
-
-            {/* Amazon-style config */}
-            <div className="space-y-6 mb-10">
-                <div>
-                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Storage Capacity</h4>
-                    <div className="flex flex-wrap gap-2">
-                        {['128GB', '256GB', '512GB', '1TB'].map(s => (
-                            <button 
-                                key={s}
-                                onClick={() => setSelectedStorage(s)}
-                                className={`px-6 py-2.5 rounded-xl border-2 font-bold transition-all ${selectedStorage === s ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-100 hover:border-gray-200 text-gray-500'}`}
-                            >
-                                {s}
-                            </button>
-                        ))}
-                    </div>
+              <span className="text-xs font-black text-cyan-400 uppercase tracking-widest block mb-2">{product.brand}</span>
+              <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-3">{product.model}</h2>
+              <div className="flex items-center gap-4">
+                <div className="flex text-yellow-400">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                 </div>
+                <span className="text-sm font-medium text-gray-500">Verified Wholesale Batch</span>
+              </div>
+            </div>
 
+            {/* Configuration Options */}
+            <div className="space-y-6 mb-8">
+              {/* Storage */}
+              {availableStorages.length > 0 && (
                 <div>
-                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">SIM Configuration</h4>
-                    <div className="flex flex-wrap gap-2">
-                        {['Physical + eSIM', 'eSIM Only', 'Dual SIM'].map(sim => (
-                            <button 
-                                key={sim}
-                                onClick={() => setSelectedSim(sim as any)}
-                                className={`px-6 py-2.5 rounded-xl border-2 font-bold transition-all ${selectedSim === sim ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-100 hover:border-gray-200 text-gray-500'}`}
-                            >
-                                {sim}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                {specs.map((spec, i) => (
-                  <div key={i} className="flex items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center mr-4 text-blue-600">
-                      {spec.icon}
-                    </div>
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">{spec.label}</span>
-                      <span className="text-sm font-bold text-gray-800 leading-tight">{spec.value}</span>
-                    </div>
+                  <h4 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Storage</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {availableStorages.map(s => {
+                      const stockForStorage = variations.filter(v => v.storage === s).reduce((sum, v) => sum + v.stock, 0);
+                      return (
+                        <button
+                          key={s}
+                          onClick={() => setSelectedStorage(s)}
+                          className={`px-5 py-2.5 rounded-xl border-2 font-bold transition-all ${
+                            selectedStorage === s
+                              ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                              : 'border-white/10 hover:border-white/20 text-gray-400'
+                          }`}
+                        >
+                          {s}
+                          <span className="ml-2 text-xs opacity-60">({stockForStorage})</span>
+                        </button>
+                      );
+                    })}
                   </div>
-                ))}
+                </div>
+              )}
+
+              {/* Color */}
+              {availableColors.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Color</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {availableColors.map(c => {
+                      const stockForColor = variations.filter(v => v.color === c && v.storage === selectedStorage).reduce((sum, v) => sum + v.stock, 0);
+                      return (
+                        <button
+                          key={c}
+                          onClick={() => setSelectedColor(c)}
+                          className={`px-5 py-2.5 rounded-xl border-2 font-bold transition-all ${
+                            selectedColor === c
+                              ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                              : 'border-white/10 hover:border-white/20 text-gray-400'
+                          }`}
+                        >
+                          {c}
+                          <span className="ml-2 text-xs opacity-60">({stockForColor})</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Grade */}
+              {availableGrades.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Grade</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {availableGrades.map(g => (
+                      <button
+                        key={g}
+                        onClick={() => setSelectedGrade(g)}
+                        className={`px-5 py-2.5 rounded-xl border-2 font-bold transition-all ${
+                          selectedGrade === g
+                            ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                            : 'border-white/10 hover:border-white/20 text-gray-400'
+                        }`}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100/50 space-y-4">
-               <div className="flex items-center text-blue-800 text-sm font-bold">
-                 <Truck className="w-5 h-5 mr-3 text-blue-500" /> Shipping: Middle East / Europe / Asia (3-5 Days) | Africa (5-6 Days)
-               </div>
-               <div className="flex items-center text-blue-800 text-sm font-bold">
-                 <CheckCircle className="w-5 h-5 mr-3 text-blue-500" /> 100% Secure B2B Escrow Transaction
-               </div>
+            {/* Specs Grid */}
+            <div className="grid grid-cols-2 gap-3 mb-8">
+              {specs.map((spec, i) => (
+                <div key={i} className="flex items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                  <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center mr-3 text-cyan-400">
+                    {spec.icon}
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider block">{spec.label}</span>
+                    <span className="text-sm font-bold text-white">{spec.value}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Shipping Info */}
+            <div className="p-5 bg-cyan-500/5 rounded-2xl border border-cyan-500/10 space-y-3">
+              <div className="flex items-center text-cyan-400 text-sm font-medium">
+                <Truck className="w-5 h-5 mr-3" />
+                Worldwide shipping: 3-6 business days via DHL/FedEx
+              </div>
+              <div className="flex items-center text-cyan-400 text-sm font-medium">
+                <CheckCircle className="w-5 h-5 mr-3" />
+                Secure B2B transaction via Stripe
+              </div>
             </div>
           </div>
         </div>
 
         {/* Order Side */}
-        <div className="w-full md:w-[400px] bg-gray-50 flex flex-col shrink-0">
-          <div className="p-8 flex-1 overflow-y-auto">
-            <h4 className="text-sm font-black text-gray-900 mb-6 uppercase tracking-widest">Order Configuration</h4>
-            
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-6 mb-6">
-                <div>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase block mb-2">Selected Specs</span>
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm font-black text-gray-800">{selectedStorage} | {selectedGrade}</span>
-                        <span className="text-xs font-bold text-green-600">In Stock</span>
-                    </div>
-                </div>
+        <div className="w-full md:w-[380px] bg-white/5 border-l border-white/5 flex flex-col">
+          <div className="p-6 flex-1">
+            <h4 className="text-sm font-black text-white mb-6 uppercase tracking-widest">Order Configuration</h4>
 
-                <div className="pt-4 border-t border-gray-100">
-                    <div className="flex justify-between items-end">
-                        <div>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Unit Price</span>
-                            <span className="text-3xl font-black text-gray-900">${product.priceUsd}</span>
-                        </div>
-                        <div className="text-right">
-                             <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                                <button onClick={() => setQty(Math.max(5, qty - 1))} className="w-8 h-8 flex items-center justify-center font-bold text-lg hover:text-blue-600 transition-colors">−</button>
-                                <span className="w-8 text-center text-sm font-black text-gray-900">{qty}</span>
-                                <button onClick={() => setQty(qty + 1)} className="w-8 h-8 flex items-center justify-center font-bold text-lg hover:text-blue-600 transition-colors">+</button>
-                             </div>
-                        </div>
-                    </div>
+            <div className="bg-gray-900 rounded-2xl p-6 border border-white/10 space-y-5">
+              {/* Selected Specs */}
+              <div>
+                <span className="text-[10px] font-bold text-gray-500 uppercase block mb-2">Selected</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-black text-white">{selectedStorage} | {selectedGrade} | {selectedColor}</span>
+                  <span className={`text-xs font-bold ${currentStock > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {currentStock > 0 ? `${currentStock} In Stock` : 'Out of Stock'}
+                  </span>
                 </div>
+              </div>
 
-                <div className="pt-4 border-t border-gray-100">
-                    <div className="flex justify-between items-center mb-4">
-                        <span className="text-sm font-bold text-gray-500">Total Amount</span>
-                        <span className="text-xl font-black text-blue-600">${(product.priceUsd * qty).toLocaleString()}</span>
-                    </div>
-                    <button 
-                        onClick={handleAdd}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center"
-                    >
-                        <ShoppingCart className="w-5 h-5 mr-2" />
-                        Add to Order
-                    </button>
-                </div>
-            </div>
-          </div>
-
-          {/* AI Terminal */}
-          <div className="p-4 bg-gray-900 border-t border-gray-800">
-             <div className="h-40 overflow-y-auto mb-4 custom-scrollbar-dark p-2 font-mono text-[10px] space-y-2">
-                {messages.map(m => (
-                  <div key={m.id} className={`${m.sender === 'user' ? 'text-indigo-400 text-right' : m.sender === 'ai' ? 'text-emerald-400' : 'text-gray-500 italic'}`}>
-                    <span className="opacity-50">{m.sender === 'user' ? '> ' : m.sender === 'ai' ? 'Cryzo: ' : '# '}</span>
-                    {m.text}
+              {/* Price & Quantity */}
+              <div className="pt-4 border-t border-white/10">
+                <div className="flex justify-between items-end">
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Unit Price</span>
+                    <span className="text-3xl font-black text-white">${currentPrice}</span>
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-             </div>
-             <AiSearchBar 
-               onSearch={handleAiCommand} 
-               isSearching={false} 
-               variant="terminal" 
-               placeholder="Ask Cryzo for data..." 
-             />
+                  <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
+                    <button
+                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      className="w-9 h-9 flex items-center justify-center font-bold text-lg text-gray-400 hover:text-cyan-400 transition-colors"
+                    >
+                      -
+                    </button>
+                    <span className="w-10 text-center text-sm font-black text-white">{qty}</span>
+                    <button
+                      onClick={() => setQty(Math.min(currentStock, qty + 1))}
+                      className="w-9 h-9 flex items-center justify-center font-bold text-lg text-gray-400 hover:text-cyan-400 transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total */}
+              <div className="pt-4 border-t border-white/10">
+                <div className="flex justify-between items-center mb-5">
+                  <span className="text-sm font-bold text-gray-400">Total Amount</span>
+                  <span className="text-2xl font-black text-cyan-400">${(currentPrice * qty).toLocaleString()}</span>
+                </div>
+                <button
+                  onClick={handleAdd}
+                  disabled={currentStock === 0}
+                  className="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 disabled:from-gray-600 disabled:to-gray-700 text-gray-950 disabled:text-gray-400 font-black py-4 rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center disabled:cursor-not-allowed"
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  {currentStock > 0 ? 'Add to Order' : 'Out of Stock'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
