@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { X } from "lucide-react";
 import { auth } from '../../services/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
@@ -102,7 +103,15 @@ export const FullScreenSignup = ({ onSuccess, onBack }: Props) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center overflow-hidden p-4 bg-gray-950">
+    <div className="min-h-screen flex items-center justify-center overflow-hidden p-4 bg-gray-950 relative">
+      {/* Close button */}
+      <button
+        onClick={onBack}
+        className="absolute top-6 right-6 p-3 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition-colors z-50"
+      >
+        <X className="w-6 h-6" />
+      </button>
+
       <div className="w-full relative max-w-5xl overflow-hidden flex flex-col md:flex-row shadow-2xl rounded-3xl border border-white/10">
 
         {/* Left Panel - Branding */}

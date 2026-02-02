@@ -591,41 +591,24 @@ export const HomePage: React.FC<HomePageProps> = ({
               <p className="text-sm text-gray-500">{products.length} products from verified suppliers</p>
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* Sort dropdown */}
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-gray-300 focus:outline-none focus:border-cyan-500/50 cursor-pointer"
-                >
-                  <option value="popular">Most Popular</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="newest">Newest First</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-              </div>
-
-              {/* View toggle */}
-              <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-lg transition-all ${
-                    viewMode === 'grid' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-500 hover:text-gray-300'
-                  }`}
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-lg transition-all ${
-                    viewMode === 'list' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-500 hover:text-gray-300'
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
+            {/* View toggle */}
+            <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg transition-all ${
+                  viewMode === 'grid' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-500 hover:text-gray-300'
+                }`}
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-lg transition-all ${
+                  viewMode === 'list' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-500 hover:text-gray-300'
+                }`}
+              >
+                <List className="w-4 h-4" />
+              </button>
             </div>
           </motion.div>
 
@@ -676,18 +659,6 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* Floating CTA */}
-      <motion.div
-        className="fixed bottom-6 right-6 z-40"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1 }}
-      >
-        <button className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-cyan-400 to-cyan-500 text-gray-950 font-bold rounded-full shadow-lg shadow-cyan-500/30 hover:shadow-cyan-400/50 transition-all">
-          <Sparkles className="w-4 h-4" />
-          <span className="hidden sm:inline">AI Assistant</span>
-        </button>
-      </motion.div>
     </div>
   );
 };

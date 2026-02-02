@@ -17,7 +17,7 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
   const subtotal = items.reduce((sum, item) => sum + (item.priceUsd * item.quantity), 0);
   const totalUnits = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const meetsMinUnits = totalUnits >= 10;
+  const meetsMinUnits = totalUnits >= 3;
   const meetsMinValue = subtotal >= 2500;
   const canCheckout = meetsMinUnits && meetsMinValue && items.length > 0;
 
@@ -162,7 +162,7 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
                   <ul className="space-y-2">
                     <li className={`flex items-center text-sm ${meetsMinUnits ? 'text-green-400' : 'text-amber-400'}`}>
                       {meetsMinUnits ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
-                      {totalUnits} / 10 units minimum
+                      {totalUnits} / 3 units minimum
                     </li>
                     <li className={`flex items-center text-sm ${meetsMinValue ? 'text-green-400' : 'text-amber-400'}`}>
                       {meetsMinValue ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
