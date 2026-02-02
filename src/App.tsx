@@ -1,6 +1,7 @@
 // FILE: src/App.tsx
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { auth } from './services/firebase';
 import { HomePage } from './components/HomePage';
 import { ProductDetailModal } from './components/ProductDetailModal';
