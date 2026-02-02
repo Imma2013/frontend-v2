@@ -1,125 +1,136 @@
 import React from 'react';
-import { ShoppingCart, LayoutDashboard, Box, LogOut, Heart, User, Clock, Globe, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, MapPin, ShoppingBag, Heart, Clock, LogOut, Shield, CreditCard } from 'lucide-react';
+import type { User } from 'firebase/auth';
 
 interface Props {
-  onNavigateHome: () => void;
-  onUpdateGlobalInventory: () => void;
+  onBack: () => void;
+  user: User | null;
+  onLogout?: () => void;
 }
 
-export const ProfileDashboard: React.FC<Props> = ({ onNavigateHome }) => {
-  const stats = [
-    { label: 'Total Spent', value: '$71,250', icon: <ShoppingCart className="w-5 h-5 text-blue-500" /> },
-    { label: 'Active Orders', value: '2', icon: <Clock className="w-5 h-5 text-indigo-500" /> },
-    { label: 'Trust Score', value: '98/100', icon: <ShieldCheck className="w-5 h-5 text-emerald-500" /> },
-    { label: 'Hub Connection', value: 'USA-EAST', icon: <Globe className="w-5 h-5 text-amber-500" /> },
-  ];
-
-  const recentOrders = [
-    { id: '#2931', date: 'Jan 19, 2026', items: 'iPhone 14 Pro Max (x15)', total: '$14,250', status: 'Processing', dest: 'Dubai, UAE' },
-    { id: '#2932', date: 'Jan 18, 2026', items: 'iPhone 14 Pro Max (x15)', total: '$14,250', status: 'Shipped', dest: 'Dubai, UAE' },
-    { id: '#2933', date: 'Jan 17, 2026', items: 'iPhone 14 Pro Max (x15)', total: '$14,250', status: 'Delivered', dest: 'Dubai, UAE' },
-    { id: '#2934', date: 'Jan 16, 2026', items: 'iPhone 14 Pro Max (x15)', total: '$14,250', status: 'Delivered', dest: 'Dubai, UAE' },
-    { id: '#2935', date: 'Jan 15, 2026', items: 'iPhone 14 Pro Max (x15)', total: '$14,250', status: 'Delivered', dest: 'Dubai, UAE' },
-  ];
+export const ProfileDashboard: React.FC<Props> = ({ onBack, user, onLogout }) => {
+  // Extract user info
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'Guest';
+  const email = user?.email || 'Not signed in';
+  const photoURL = user?.photoURL;
+  const initials = displayName.slice(0, 2).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-white border-r border-gray-200 flex flex-col p-6">
-        <div className="flex items-center space-x-2 mb-10">
-            <Box className="w-6 h-6 text-blue-600" />
-            <span className="text-xl font-black tracking-tighter">CRYZO Dealer</span>
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-gray-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onBack}
+              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-black text-white">My Account</h1>
+              <p className="text-sm text-gray-500">Manage your profile</p>
+            </div>
+          </div>
         </div>
-
-        <nav className="flex-1 space-y-2">
-            <button className="w-full flex items-center space-x-3 px-4 py-3 bg-blue-50 text-blue-600 rounded-xl font-bold transition-all">
-                <LayoutDashboard className="w-5 h-5" />
-                <span>Dashboard</span>
-            </button>
-            <button className="w-full flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 rounded-xl font-medium transition-all">
-                <ShoppingCart className="w-5 h-5" />
-                <span>Orders</span>
-            </button>
-        </nav>
-
-        <button onClick={onNavigateHome} className="mt-auto flex items-center space-x-2 text-red-600 font-bold p-4 hover:bg-red-50 rounded-xl transition-all">
-            <LogOut className="w-5 h-5" />
-            <span>Back to Shop</span>
-        </button>
       </div>
 
-      {/* Main */}
-      <div className="flex-1 p-10">
-        <div className="mb-10 flex justify-between items-end">
-            <div>
-                <h1 className="text-3xl font-black text-gray-900 mb-2">Dealer Dashboard</h1>
-                <p className="text-gray-500">Welcome back, Orion Electronics Ltd.</p>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        {/* Profile Card */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+          <div className="flex items-center gap-6">
+            {/* Avatar */}
+            {photoURL ? (
+              <img
+                src={photoURL}
+                alt={displayName}
+                className="w-20 h-20 rounded-2xl object-cover border-2 border-cyan-500/30"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-2xl font-black text-white border-2 border-cyan-500/30">
+                {initials}
+              </div>
+            )}
+
+            <div className="flex-1">
+              <h2 className="text-xl font-black text-white">{displayName}</h2>
+              <p className="text-gray-400 flex items-center gap-2 mt-1">
+                <Mail className="w-4 h-4" />
+                {email}
+              </p>
+              {user && (
+                <span className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-xs font-bold text-cyan-400">
+                  <Shield className="w-3 h-3" />
+                  Verified Account
+                </span>
+              )}
             </div>
-            <div className="flex items-center space-x-4">
-                <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900">Orion</p>
-                    <p className="text-xs text-gray-400">Premium Partner</p>
-                </div>
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black border border-white/10 shadow-lg">
-                    OE
-                </div>
-            </div>
+
+            {user && onLogout && (
+              <button
+                onClick={onLogout}
+                className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 font-semibold transition-colors flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-            {stats.map((s, i) => (
-                <div key={i} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center space-x-4">
-                    <div className="p-3 bg-gray-50 rounded-xl">
-                        {s.icon}
-                    </div>
-                    <div>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{s.label}</p>
-                        <p className="text-xl font-black text-gray-900">{s.value}</p>
-                    </div>
-                </div>
-            ))}
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <ShoppingBag className="w-6 h-6 text-cyan-400 mx-auto mb-2" />
+            <p className="text-2xl font-black text-white">0</p>
+            <p className="text-xs text-gray-500">Orders</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <Heart className="w-6 h-6 text-pink-400 mx-auto mb-2" />
+            <p className="text-2xl font-black text-white">0</p>
+            <p className="text-xs text-gray-500">Watchlist</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <Clock className="w-6 h-6 text-amber-400 mx-auto mb-2" />
+            <p className="text-2xl font-black text-white">-</p>
+            <p className="text-xs text-gray-500">Member Since</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <CreditCard className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
+            <p className="text-2xl font-black text-white">$0</p>
+            <p className="text-xs text-gray-500">Total Spent</p>
+          </div>
         </div>
 
-        {/* Recent Orders Table */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                <h2 className="font-black text-gray-900">Recent Wholesale Orders</h2>
+        {/* Contact Info */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+          <h3 className="font-bold text-white mb-4">Contact Cryzo</h3>
+          <div className="space-y-3">
+            <a href="mailto:sales@cryzo.co.in" className="flex items-center gap-3 text-gray-400 hover:text-cyan-400 transition-colors">
+              <Mail className="w-5 h-5" />
+              sales@cryzo.co.in
+            </a>
+            <a href="tel:+19404009316" className="flex items-center gap-3 text-gray-400 hover:text-cyan-400 transition-colors">
+              <Phone className="w-5 h-5" />
+              +1 940-400-9316
+            </a>
+            <div className="flex items-center gap-3 text-gray-400">
+              <MapPin className="w-5 h-5" />
+              Worldwide Shipping via DHL/FedEx
             </div>
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                            <th className="px-6 py-4">Order ID</th>
-                            <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4">Inventory Items</th>
-                            <th className="px-6 py-4">Total Value</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4">Destination</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 text-sm">
-                        {recentOrders.map((o) => (
-                            <tr key={o.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 font-bold text-blue-600">{o.id}</td>
-                                <td className="px-6 py-4 text-gray-500">{o.date}</td>
-                                <td className="px-6 py-4 font-medium text-gray-900">{o.items}</td>
-                                <td className="px-6 py-4 font-black text-gray-900">{o.total}</td>
-                                <td className="px-6 py-4">
-                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
-                                        o.status === 'Delivered' ? 'bg-green-50 text-green-600 border-green-100' :
-                                        o.status === 'Shipped' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                                        'bg-blue-50 text-blue-600 border-blue-100'
-                                    }`}>
-                                        {o.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-gray-500">{o.dest}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+          </div>
+        </div>
+
+        {/* Info Cards */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border border-cyan-500/20 rounded-2xl p-6">
+            <h4 className="font-bold text-cyan-400 mb-2">Minimum Order</h4>
+            <p className="text-gray-400 text-sm">10 units or $2,500 minimum order value for wholesale pricing.</p>
+          </div>
+          <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-2xl p-6">
+            <h4 className="font-bold text-emerald-400 mb-2">Payment Methods</h4>
+            <p className="text-gray-400 text-sm">Secure checkout via Stripe (cards) or Wire Transfer for large orders.</p>
+          </div>
         </div>
       </div>
     </div>

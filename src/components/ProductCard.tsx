@@ -21,9 +21,9 @@ interface Props {
   onQuickAdd?: (qty: number) => void;
 }
 
-const STORAGE_OPTIONS = ['64GB', '128GB', '256GB', '512GB', '1TB'];
-const GRADE_OPTIONS: Grade[] = ['Brand New', 'Refurb A', 'Refurb B', 'Refurb C', 'Refurb D'];
-const COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Purple', 'Gold', 'Silver', 'Green', 'Red'];
+const ALL_STORAGE_OPTIONS = ['32GB', '64GB', '128GB', '256GB', '512GB', '1TB'];
+const ALL_GRADE_OPTIONS: Grade[] = ['Brand New', 'A2', 'A1', 'B1', 'B1 (Low Batt)', 'B2', 'Refurb A', 'Refurb B', 'Refurb C'];
+const ALL_COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Purple', 'Gold', 'Silver', 'Green', 'Red', 'Pink', 'Space Gray'];
 
 // Grade color mapping
 const gradeColors: Record<Grade, { bg: string; text: string; border: string }> = {
@@ -51,30 +51,46 @@ export const ProductCard: React.FC<Props> = ({
   onClick,
   onQuickAdd
 }) => {
+  const variations = product.variations || [];
+
+  // Get available options from variations
+  const availableStorages = [...new Set(variations.map(v => v.storage))];
+  const availableGrades = [...new Set(variations.map(v => v.grade))];
+  const availableColors = [...new Set(variations.map(v => v.color))];
+
   const [qty, setQty] = useState(5);
   const [selectedStorage, setSelectedStorage] = useState(product.storage);
-  const [selectedGrade, setSelectedGrade] = useState<Grade>(product.grade);
-  const [selectedColor, setSelectedColor] = useState(product.color || 'Black');
+  const [selectedGrade, setSelectedGrade] = useState<string>(variations[0]?.grade || product.grade);
+  const [selectedColor, setSelectedColor] = useState(variations[0]?.color || product.color || 'Black');
   const [currentPrice, setCurrentPrice] = useState(product.priceUsd);
+  const [currentStock, setCurrentStock] = useState(product.stock);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Dynamic pricing based on configuration
+  // Find matching variation and update price/stock
   useEffect(() => {
-    let modifier = 0;
+    if (variations.length > 0) {
+      const match = variations.find(v =>
+        v.storage === selectedStorage &&
+        v.grade === selectedGrade &&
+        v.color === selectedColor
+      ) || variations.find(v =>
+        v.storage === selectedStorage && v.color === selectedColor
+      ) || variations.find(v =>
+        v.color === selectedColor
+      ) || variations[0];
 
-    // Storage modifiers
-    const storageIndex = STORAGE_OPTIONS.indexOf(selectedStorage);
-    if (storageIndex > 0) modifier += storageIndex * 60;
+      if (match) {
+        setCurrentPrice(match.price);
+        setCurrentStock(match.stock);
+      }
+    }
+  }, [selectedStorage, selectedGrade, selectedColor, variations]);
 
-    // Grade modifiers
-    if (selectedGrade === 'Brand New') modifier += 100;
-    if (selectedGrade === 'Refurb A') modifier += 0;
-    if (selectedGrade === 'Refurb B') modifier -= 50;
-    if (selectedGrade === 'Refurb C') modifier -= 100;
-    if (selectedGrade === 'Refurb D') modifier -= 150;
-
-    setCurrentPrice(Math.max(100, product.priceUsd + modifier));
-  }, [selectedStorage, selectedGrade, product.priceUsd]);
+  // Get stock for a specific option
+  const getStockForOption = (type: 'storage' | 'grade' | 'color', value: string) => {
+    const matching = variations.filter(v => v[type] === value);
+    return matching.reduce((sum, v) => sum + (v.stock || 0), 0);
+  };
 
   const lotTotal = currentPrice * qty;
   const gradeStyle = gradeColors[selectedGrade] || gradeColors['Refurb A'];
@@ -134,16 +150,20 @@ export const ProductCard: React.FC<Props> = ({
             <ShieldCheck className="w-3 h-3" />
             {selectedGrade}
           </span>
-          <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">
+          <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${
+            currentStock > 0
+              ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+              : 'text-red-400 bg-red-500/10 border-red-500/20'
+          }`}>
             <Signal className="w-3 h-3" />
-            {product.stock} in stock
+            {currentStock > 0 ? `${currentStock} in stock` : 'Out of stock'}
           </span>
         </div>
       </div>
 
       {/* Configuration Section */}
       <div className="p-4 space-y-4" onClick={(e) => e.stopPropagation()}>
-        {/* Variant selectors - Amazon style */}
+        {/* Variant selectors - Shows only available options with stock */}
         <div className="grid grid-cols-3 gap-3">
           {/* Storage */}
           <div className="space-y-1.5">
@@ -154,9 +174,14 @@ export const ProductCard: React.FC<Props> = ({
               className="w-full bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-lg px-2 py-2 focus:outline-none focus:border-cyan-500/50 cursor-pointer appearance-none"
               style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
             >
-              {STORAGE_OPTIONS.map((s) => (
-                <option key={s} value={s} className="bg-gray-900">{s}</option>
-              ))}
+              {(availableStorages.length > 0 ? availableStorages : [product.storage]).map((s) => {
+                const stock = getStockForOption('storage', s);
+                return (
+                  <option key={s} value={s} className="bg-gray-900">
+                    {s} {stock > 0 ? `(${stock})` : ''}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -165,11 +190,11 @@ export const ProductCard: React.FC<Props> = ({
             <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Grade</label>
             <select
               value={selectedGrade}
-              onChange={(e) => setSelectedGrade(e.target.value as Grade)}
+              onChange={(e) => setSelectedGrade(e.target.value)}
               className="w-full bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-lg px-2 py-2 focus:outline-none focus:border-cyan-500/50 cursor-pointer appearance-none"
               style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
             >
-              {GRADE_OPTIONS.map((g) => (
+              {(availableGrades.length > 0 ? availableGrades : [product.grade]).map((g) => (
                 <option key={g} value={g} className="bg-gray-900">{g}</option>
               ))}
             </select>
@@ -184,9 +209,14 @@ export const ProductCard: React.FC<Props> = ({
               className="w-full bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-lg px-2 py-2 focus:outline-none focus:border-cyan-500/50 cursor-pointer appearance-none"
               style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
             >
-              {COLOR_OPTIONS.map((c) => (
-                <option key={c} value={c} className="bg-gray-900">{c}</option>
-              ))}
+              {(availableColors.length > 0 ? availableColors : [product.color || 'Black']).map((c) => {
+                const stock = getStockForOption('color', c);
+                return (
+                  <option key={c} value={c} className="bg-gray-900">
+                    {c} {stock > 0 ? `(${stock})` : ''}
+                  </option>
+                );
+              })}
             </select>
           </div>
         </div>
@@ -213,8 +243,9 @@ export const ProductCard: React.FC<Props> = ({
               </button>
               <span className="w-10 text-center text-sm font-bold text-white">{qty}</span>
               <button
-                onClick={() => setQty(Math.min(product.stock, qty + 1))}
-                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-cyan-400 hover:bg-white/10 rounded-lg transition-all"
+                onClick={() => setQty(Math.min(currentStock, qty + 1))}
+                disabled={currentStock === 0}
+                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-cyan-400 hover:bg-white/10 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus className="w-4 h-4" />
               </button>

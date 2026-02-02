@@ -257,6 +257,7 @@ const App: React.FC = () => {
           <ProfileDashboard
             onBack={() => setCurrentView('home')}
             user={user}
+            onLogout={handleLogout}
           />
         )}
 
