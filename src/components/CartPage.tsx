@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, CreditCard, ChevronLeft, Minus, Plus, AlertCircle, CheckCircle } from 'lucide-react';
+import { Trash2, CreditCard, ArrowLeft, Minus, Plus, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
 import { createCheckout } from '../services/api';
 import type { CartItem } from '../types';
 
@@ -17,7 +17,6 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
   const subtotal = items.reduce((sum, item) => sum + (item.priceUsd * item.quantity), 0);
   const totalUnits = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Check MOQ requirements
   const meetsMinUnits = totalUnits >= 10;
   const meetsMinValue = subtotal >= 2500;
   const canCheckout = meetsMinUnits && meetsMinValue && items.length > 0;
@@ -42,7 +41,6 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
       const result = await createCheckout(checkoutItems);
 
       if (result.success && result.url) {
-        // Redirect to Stripe Checkout
         window.location.href = result.url;
       } else {
         setError(result.error || 'Checkout failed. Please try again.');
@@ -55,64 +53,88 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <button
-          onClick={onBack}
-          className="flex items-center text-gray-500 hover:text-gray-900 transition-colors mb-8 font-medium"
-        >
-          <ChevronLeft className="w-5 h-5 mr-1" />
-          Back to Shop
-        </button>
-
-        <div className="flex items-baseline justify-between mb-8">
-          <h1 className="text-3xl font-black text-gray-900">Shopping Cart ({items.length})</h1>
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-gray-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onBack}
+              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-black text-white">Shopping Cart</h1>
+              <p className="text-sm text-gray-500">{items.length} items • {totalUnits} units</p>
+            </div>
+          </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {items.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-gray-200">
-            <p className="text-gray-500 font-medium">Your cart is empty.</p>
-            <button onClick={onBack} className="mt-4 text-blue-600 font-bold hover:underline">Browse Inventory</button>
+          <div className="text-center py-20 bg-white/5 rounded-2xl border border-white/10">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/5 rounded-full mb-4">
+              <ShoppingCart className="w-8 h-8 text-gray-600" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Your cart is empty</h3>
+            <p className="text-gray-500 mb-6">Add items to start your wholesale order</p>
+            <button
+              onClick={onBack}
+              className="bg-cyan-500 hover:bg-cyan-400 text-gray-950 px-6 py-2.5 rounded-xl font-bold transition-colors"
+            >
+              Browse Inventory
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Cart Items List */}
+            {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => (
-                <div key={item.id} className="bg-white border border-gray-200 rounded-xl p-6 flex flex-col sm:flex-row items-center gap-6 hover:shadow-md transition-shadow">
-                  <div className="w-full sm:w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-50 rounded-lg flex items-center justify-center text-gray-500 font-bold text-xs uppercase text-center p-2 border border-gray-200">
+                <div
+                  key={item.id}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6 hover:bg-white/[0.07] transition-colors"
+                >
+                  {/* Product placeholder */}
+                  <div className="w-full sm:w-24 h-24 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center text-gray-500 font-bold text-xs uppercase text-center p-2 border border-white/10">
                     {item.brand}<br />{item.model}
                   </div>
 
                   <div className="flex-1 w-full text-center sm:text-left">
-                    <h3 className="font-bold text-lg text-gray-900">{item.brand} {item.model}</h3>
-                    <p className="text-sm text-gray-500 font-medium">{item.grade} - {item.storage} - {item.origin} Hub</p>
-                    <div className="mt-1 text-xs text-green-600 font-bold">{item.stock} units available</div>
+                    <h3 className="font-bold text-lg text-white">{item.brand} {item.model}</h3>
+                    <p className="text-sm text-gray-400 font-medium">{item.grade} • {item.storage} • {item.origin}</p>
+                    <div className="mt-1 text-xs text-cyan-400 font-bold">{item.stock} units available</div>
                   </div>
 
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg">
+                    {/* Quantity controls */}
+                    <div className="flex items-center bg-white/5 border border-white/10 rounded-xl">
                       <button
                         onClick={() => onUpdateQty(item.id, -1)}
-                        className="p-2 hover:bg-gray-200 rounded-l-lg transition-colors"
+                        className="p-2.5 hover:bg-white/10 rounded-l-xl transition-colors text-gray-400 hover:text-white"
                       >
-                        <Minus className="w-4 h-4 text-gray-600" />
+                        <Minus className="w-4 h-4" />
                       </button>
-                      <span className="w-12 text-center font-bold text-sm">{item.quantity}</span>
+                      <span className="w-12 text-center font-bold text-sm text-white">{item.quantity}</span>
                       <button
                         onClick={() => onUpdateQty(item.id, 1)}
-                        className="p-2 hover:bg-gray-200 rounded-r-lg transition-colors"
+                        className="p-2.5 hover:bg-white/10 rounded-r-xl transition-colors text-gray-400 hover:text-white"
                       >
-                        <Plus className="w-4 h-4 text-gray-600" />
+                        <Plus className="w-4 h-4" />
                       </button>
                     </div>
+
+                    {/* Price */}
                     <div className="text-right w-28">
-                      <div className="font-black text-lg">${(item.priceUsd * item.quantity).toLocaleString()}</div>
-                      <div className="text-xs text-gray-400">${item.priceUsd} each</div>
+                      <div className="font-black text-lg text-white">${(item.priceUsd * item.quantity).toLocaleString()}</div>
+                      <div className="text-xs text-gray-500">${item.priceUsd}/unit</div>
                     </div>
+
+                    {/* Remove */}
                     <button
                       onClick={() => onRemove(item.id)}
-                      className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                      className="p-2 text-gray-500 hover:text-red-400 transition-colors"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
@@ -123,44 +145,51 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white border border-gray-200 rounded-xl p-6 sticky top-24 shadow-sm">
-                <h2 className="font-black text-xl text-gray-900 mb-6">Order Summary</h2>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sticky top-24">
+                <h2 className="font-black text-xl text-white mb-6">Order Summary</h2>
 
                 {/* MOQ Requirements */}
-                <div className={`rounded-lg p-4 mb-6 border ${canCheckout ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
-                  <h4 className={`text-xs font-bold uppercase tracking-wider mb-2 ${canCheckout ? 'text-green-800' : 'text-amber-800'}`}>
+                <div className={`rounded-xl p-4 mb-6 border ${
+                  canCheckout
+                    ? 'bg-green-500/10 border-green-500/30'
+                    : 'bg-amber-500/10 border-amber-500/30'
+                }`}>
+                  <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${
+                    canCheckout ? 'text-green-400' : 'text-amber-400'
+                  }`}>
                     Minimum Order Requirements
                   </h4>
-                  <ul className="text-sm space-y-2">
-                    <li className={`flex items-center ${meetsMinUnits ? 'text-green-700' : 'text-amber-700'}`}>
+                  <ul className="space-y-2">
+                    <li className={`flex items-center text-sm ${meetsMinUnits ? 'text-green-400' : 'text-amber-400'}`}>
                       {meetsMinUnits ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
-                      Units: {totalUnits} / 10 minimum
+                      {totalUnits} / 10 units minimum
                     </li>
-                    <li className={`flex items-center ${meetsMinValue ? 'text-green-700' : 'text-amber-700'}`}>
+                    <li className={`flex items-center text-sm ${meetsMinValue ? 'text-green-400' : 'text-amber-400'}`}>
                       {meetsMinValue ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
-                      Value: ${subtotal.toLocaleString()} / $2,500 minimum
+                      ${subtotal.toLocaleString()} / $2,500 minimum
                     </li>
                   </ul>
                 </div>
 
-                <div className="space-y-4 mb-6 pb-6 border-b border-gray-100">
-                  <div className="flex justify-between text-gray-600">
-                    <span>Subtotal ({totalUnits} units)</span>
-                    <span className="font-bold text-gray-900">${subtotal.toLocaleString()}</span>
+                {/* Totals */}
+                <div className="space-y-3 mb-6 pb-6 border-b border-white/10">
+                  <div className="flex justify-between text-gray-400">
+                    <span>Subtotal</span>
+                    <span className="font-bold text-white">${subtotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-gray-400">
                     <span>Shipping</span>
-                    <span className="text-gray-400 italic">Calculated at checkout</span>
+                    <span className="text-gray-500 italic">At checkout</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-end mb-6">
-                  <span className="font-bold text-lg text-gray-900">Total</span>
-                  <span className="font-black text-3xl text-gray-900">${subtotal.toLocaleString()}</span>
+                  <span className="font-bold text-gray-400">Total</span>
+                  <span className="font-black text-3xl text-white">${subtotal.toLocaleString()}</span>
                 </div>
 
                 {error && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
                     {error}
                   </div>
                 )}
@@ -168,10 +197,10 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
                 <button
                   onClick={handleCheckout}
                   disabled={!canCheckout || isProcessing}
-                  className={`w-full font-black py-4 rounded-xl shadow-lg transition-all flex items-center justify-center ${
+                  className={`w-full font-black py-4 rounded-xl transition-all flex items-center justify-center ${
                     canCheckout && !isProcessing
-                      ? 'bg-yellow-400 hover:bg-yellow-500 text-gray-900 shadow-yellow-200'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-cyan-400 to-cyan-500 text-gray-950 hover:shadow-lg hover:shadow-cyan-500/30'
+                      : 'bg-white/10 text-gray-500 cursor-not-allowed'
                   }`}
                 >
                   {isProcessing ? (
@@ -184,7 +213,7 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
                   )}
                 </button>
 
-                <p className="text-center text-xs text-gray-400 mt-4">
+                <p className="text-center text-xs text-gray-500 mt-4">
                   Secure checkout powered by Stripe
                 </p>
               </div>
