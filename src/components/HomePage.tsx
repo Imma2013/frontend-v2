@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
@@ -477,7 +477,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 label={query}
                 onClick={() => {
                   setSearchQuery(query);
-                  onSearch(query, null);
+                  onSearch(query);
                 }}
               />
             ))}
