@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
   Send,
-  Paperclip,
   X,
   Zap,
   Globe,
@@ -35,7 +34,7 @@ interface HomePageProps {
   savedIds: string[];
   onToggleSaved: (id: string) => void;
   isSearching: boolean;
-  onSearch: (query: string, image?: string | null) => void;
+  onSearch: (query: string) => void;
   aiMessage?: string | null;
   aiSuggestion?: string | null;
   lastModel?: string | null;
@@ -153,10 +152,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   cartCount = 0
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('popular');
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { scrollY } = useScroll();
 
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0.3]);
@@ -164,26 +161,14 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (searchQuery.trim() || imagePreview) {
-      onSearch(searchQuery, imagePreview);
+    if (searchQuery.trim()) {
+      onSearch(searchQuery);
     }
   };
 
   const handleClearSearch = () => {
     setSearchQuery('');
-    setImagePreview(null);
     onResetSearch?.();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImagePreview(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const quickSearches = [
@@ -380,30 +365,6 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-cyan-400 to-teal-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 group-focus-within:opacity-60 transition-opacity duration-500" />
 
               <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
-                {/* Image Preview */}
-                <AnimatePresence>
-                  {imagePreview && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="p-3 border-b border-white/10"
-                    >
-                      <div className="relative inline-block">
-                        <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-white/20" />
-                        <button
-                          type="button"
-                          onClick={() => setImagePreview(null)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                      <span className="ml-3 text-xs text-gray-400">Price list attached</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
                 <div className="flex items-center p-2">
                   {/* AI Icon */}
                   <div className="pl-4 pr-3">
@@ -454,33 +415,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </motion.span>
                     )}
 
-                    {/* Upload button */}
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className={`p-2.5 rounded-xl transition-all ${
-                        imagePreview
-                          ? 'text-cyan-400 bg-cyan-500/20'
-                          : 'text-gray-500 hover:text-cyan-400 hover:bg-white/5'
-                      }`}
-                      title="Upload price list"
-                    >
-                      <Paperclip className="w-5 h-5" />
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        accept="image/*"
-                        className="hidden"
-                      />
-                    </button>
-
                     {/* Search button */}
                     <button
                       type="submit"
-                      disabled={(!searchQuery.trim() && !imagePreview) || isSearching}
+                      disabled={!searchQuery.trim() || isSearching}
                       className={`p-3 rounded-xl transition-all duration-300 ${
-                        (searchQuery.trim() || imagePreview) && !isSearching
+                        searchQuery.trim() && !isSearching
                           ? 'bg-gradient-to-r from-cyan-400 to-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-400/50'
                           : 'bg-white/5 text-gray-600 cursor-not-allowed'
                       }`}

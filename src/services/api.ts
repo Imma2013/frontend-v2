@@ -57,20 +57,14 @@ export interface Product {
 }
 
 // AI-Powered Search (uses Gemini)
-export const aiSearch = async (
-  query: string,
-  image?: string | null
-): Promise<SearchResponse> => {
+export const aiSearch = async (query: string): Promise<SearchResponse> => {
   try {
     const response = await fetch(`${API_BASE_URL}/search`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        query,
-        image: image || undefined,
-      }),
+      body: JSON.stringify({ query }),
     });
 
     if (!response.ok) {

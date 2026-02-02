@@ -99,13 +99,13 @@ const App: React.FC = () => {
   };
 
   // AI Search handler
-  const handleAiSearch = async (query: string, image?: string | null) => {
+  const handleAiSearch = async (query: string) => {
     setIsSearching(true);
     setAiMessage(null);
     setAiSuggestion(null);
 
     try {
-      const response: SearchResponse = await aiSearch(query, image);
+      const response: SearchResponse = await aiSearch(query);
       setLastModel(response.model);
       setAiMessage(response.message || null);
       setAiSuggestion(response.suggestion || null);
