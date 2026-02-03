@@ -16,10 +16,7 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
 
   const subtotal = items.reduce((sum, item) => sum + (item.priceUsd * item.quantity), 0);
   const totalUnits = items.reduce((sum, item) => sum + item.quantity, 0);
-
-  const meetsMinUnits = totalUnits >= 3;
-  const meetsMinValue = subtotal >= 2500;
-  const canCheckout = meetsMinUnits && meetsMinValue && items.length > 0;
+  const canCheckout = items.length > 0;
 
   const handleCheckout = async () => {
     if (!canCheckout) return;
@@ -147,29 +144,6 @@ export const CartPage: React.FC<Props> = ({ items, onRemove, onUpdateQty, onBack
             <div className="lg:col-span-1">
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sticky top-24">
                 <h2 className="font-black text-xl text-white mb-6">Order Summary</h2>
-
-                {/* MOQ Requirements */}
-                <div className={`rounded-xl p-4 mb-6 border ${
-                  canCheckout
-                    ? 'bg-green-500/10 border-green-500/30'
-                    : 'bg-amber-500/10 border-amber-500/30'
-                }`}>
-                  <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${
-                    canCheckout ? 'text-green-400' : 'text-amber-400'
-                  }`}>
-                    Minimum Order Requirements
-                  </h4>
-                  <ul className="space-y-2">
-                    <li className={`flex items-center text-sm ${meetsMinUnits ? 'text-green-400' : 'text-amber-400'}`}>
-                      {meetsMinUnits ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
-                      {totalUnits} / 3 units minimum
-                    </li>
-                    <li className={`flex items-center text-sm ${meetsMinValue ? 'text-green-400' : 'text-amber-400'}`}>
-                      {meetsMinValue ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
-                      ${subtotal.toLocaleString()} / $2,500 minimum
-                    </li>
-                  </ul>
-                </div>
 
                 {/* Totals */}
                 <div className="space-y-3 mb-6 pb-6 border-b border-white/10">

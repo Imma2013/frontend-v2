@@ -5,26 +5,15 @@ import {
   Send,
   X,
   Zap,
-  Globe,
   Shield,
-  Package,
   ChevronDown,
-  Filter,
   Grid3X3,
   List,
-  ArrowUpRight,
-  Star,
-  TrendingUp,
-  Clock,
-  CheckCircle2,
   Cpu,
   ShoppingCart,
   Heart,
   User,
-  LogOut,
-  Play,
-  Volume2,
-  VolumeX
+  LogOut
 } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import type { Product } from '../types';
@@ -167,17 +156,10 @@ export const HomePage: React.FC<HomePageProps> = ({
   ];
 
   const stats = [
-    { value: 10000, suffix: '+', label: 'Units Available', icon: Package },
     { value: 98, suffix: '%', label: 'Grade Accuracy', icon: Shield },
-    { value: 6, suffix: '', label: 'Global Hubs', icon: Globe },
+    { value: 24, suffix: '/7', label: 'AI Support', icon: Sparkles },
   ];
 
-  // Supplier showcase videos (muted autoplay)
-  const supplierVideos = [
-    { id: 'v1', src: '/videos/supplier-1.mp4', label: 'Stock Verification' },
-    { id: 'v2', src: '/videos/supplier-2.mp4', label: 'Quality Check' },
-    { id: 'v3', src: '/videos/supplier-3.mp4', label: 'Warehouse Tour' },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -194,10 +176,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <span className="text-cyan-400 font-black text-base">C</span>
                 </div>
               </div>
-              <div className="flex flex-col leading-none">
-                <span className="text-lg font-black tracking-tight">CRYZO</span>
-                <span className="text-[8px] tracking-[0.2em] text-cyan-400 font-bold uppercase">Wholesale</span>
-              </div>
+              <span className="text-lg font-black tracking-tight">CRYZO</span>
             </div>
 
             {/* Nav Actions */}
@@ -310,7 +289,6 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="text-left">
               <span className="text-3xl font-black tracking-tight">CRYZO</span>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-[0.2em]">Wholesale</span>
                 <span className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-400 text-[9px] font-bold rounded">AI-POWERED</span>
               </div>
             </div>
@@ -323,9 +301,9 @@ export const HomePage: React.FC<HomePageProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Source Phones{' '}
+            Find Your Phone{' '}
             <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-teal-400 bg-clip-text text-transparent">
-              At Scale
+              With AI
             </span>
           </motion.h1>
 
@@ -335,7 +313,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Search our global inventory with AI. Get instant quotes on verified wholesale lots.
+            Search our inventory with AI. Premium refurbished iPhones and iPads, shipped from USA.
           </motion.p>
 
           {/* AI Search Bar - THE MOAT */}
@@ -570,54 +548,6 @@ export const HomePage: React.FC<HomePageProps> = ({
             </motion.div>
           )}
 
-          {/* Quality Verified Video Section */}
-          <motion.div
-            className="mt-20 pt-12 border-t border-white/5"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-4">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Verified Source</span>
-              </div>
-              <h2 className="text-2xl md:text-3xl font-black text-white mb-2">Quality Verified</h2>
-              <p className="text-sm text-gray-500 max-w-md mx-auto">Direct footage from our global suppliers. Every unit inspected before shipping.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {supplierVideos.map((video, i) => (
-                <motion.div
-                  key={video.id}
-                  className="relative rounded-2xl overflow-hidden bg-gray-900/50 border border-white/5 group"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <video
-                    src={video.src}
-                    muted
-                    autoPlay
-                    loop
-                    playsInline
-                    className="w-full aspect-[9/16] object-cover"
-                  />
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent pointer-events-none" />
-                  {/* Label */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <span className="text-sm font-semibold text-white">{video.label}</span>
-                  </div>
-                  {/* Muted indicator */}
-                  <div className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur-sm rounded-lg">
-                    <VolumeX className="w-4 h-4 text-white/70" />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
         </div>
       </section>
 

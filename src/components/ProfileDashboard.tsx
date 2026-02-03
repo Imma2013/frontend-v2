@@ -124,12 +124,12 @@ export const ProfileDashboard: React.FC<Props> = ({ onBack, user, onLogout }) =>
         {/* Info Cards */}
         <div className="grid md:grid-cols-2 gap-4">
           <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border border-cyan-500/20 rounded-2xl p-6">
-            <h4 className="font-bold text-cyan-400 mb-2">Minimum Order</h4>
-            <p className="text-gray-400 text-sm">3 units or $2,500 minimum order value for wholesale pricing.</p>
+            <h4 className="font-bold text-cyan-400 mb-2">Fast Shipping</h4>
+            <p className="text-gray-400 text-sm">All orders ship from USA via DHL/FedEx. 2-5 business days worldwide.</p>
           </div>
           <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-2xl p-6">
-            <h4 className="font-bold text-emerald-400 mb-2">Payment Methods</h4>
-            <p className="text-gray-400 text-sm">Secure checkout via Stripe (cards) or Wire Transfer for large orders.</p>
+            <h4 className="font-bold text-emerald-400 mb-2">Secure Payment</h4>
+            <p className="text-gray-400 text-sm">Checkout securely via Stripe. All major cards accepted.</p>
           </div>
         </div>
       </div>

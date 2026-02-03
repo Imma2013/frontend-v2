@@ -23,7 +23,7 @@ interface Props {
 }
 
 const ALL_STORAGE_OPTIONS = ['32GB', '64GB', '128GB', '256GB', '512GB', '1TB'];
-const ALL_GRADE_OPTIONS: Grade[] = ['Brand New', 'A2', 'A1', 'B1', 'B1 (Low Batt)', 'B2', 'Refurb A', 'Refurb B', 'Refurb C'];
+const ALL_GRADE_OPTIONS: Grade[] = ['Brand New', 'A2', 'A1', 'B1', 'B2', 'Refurb A', 'Refurb B', 'Refurb C'];
 const ALL_COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Purple', 'Gold', 'Silver', 'Green', 'Red', 'Pink', 'Space Gray'];
 
 // Grade color mapping
@@ -278,7 +278,7 @@ export const ProductCard: React.FC<Props> = ({
 
         {/* Lot total */}
         <div className="flex items-center justify-between py-2 px-3 bg-cyan-500/5 border border-cyan-500/10 rounded-xl">
-          <span className="text-xs font-semibold text-gray-400">Lot Total ({qty} units)</span>
+          <span className="text-xs font-semibold text-gray-400">Total ({qty} units)</span>
           <span className="text-lg font-black text-cyan-400">${lotTotal.toLocaleString()}</span>
         </div>
       </div>
