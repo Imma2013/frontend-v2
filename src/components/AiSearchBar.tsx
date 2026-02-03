@@ -9,18 +9,8 @@ interface Props {
 }
 
 const selectModel = (userQuery: string): string => {
-  // Simple search = Flash
-  if (userQuery.includes("show") || userQuery.includes("find")) {
-    return "google/gemini-2.0-flash-thinking-exp:free";
-  }
-  
-  // Complex question = Pro
-  if (userQuery.includes("compare") || userQuery.includes("best") || userQuery.includes("recommend")) {
-    return "google/gemini-2.5-pro-exp-03-25:free";
-  }
-  
-  // Default to Flash for speed
-  return "google/gemini-2.0-flash-thinking-exp:free";
+  // Use Gemini 3.0 Flash for all searches - fast and smart
+  return "gemini-3.0-flash";
 };
 
 export const AiSearchBar: React.FC<Props> = ({ onSearch, isSearching, variant = 'hero', placeholder }) => {

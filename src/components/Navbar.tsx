@@ -14,17 +14,14 @@ interface Props {
 const CryzoLogo = () => (
   <div className="flex items-center gap-2.5">
     {/* Crystal/Diamond Icon with "C" */}
-    <div className="w-9 h-9 relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-cyan-500 to-blue-600 rounded-xl transform rotate-45 shadow-lg shadow-cyan-500/25" />
+    <div className="w-10 h-10 relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-cyan-500 to-blue-600 rounded-xl transform rotate-45 shadow-lg shadow-cyan-500/30" />
       <div className="absolute inset-[2px] bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg transform rotate-45" />
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-cyan-400 font-black text-base">C</span>
+        <span className="text-cyan-400 font-black text-lg tracking-tight">C</span>
       </div>
     </div>
-    <div className="flex flex-col leading-none">
-      <span className="text-lg font-black tracking-tight text-white">CRYZO</span>
-      <span className="text-[8px] tracking-[0.2em] text-cyan-400 font-bold uppercase">Wholesale</span>
-    </div>
+    <span className="text-xl font-black tracking-tight text-white">CRYZO</span>
   </div>
 );
 

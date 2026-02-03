@@ -13,7 +13,7 @@ interface Message {
 export const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { id: '1', sender: 'ai', text: "Hello! I'm Cryzo Copilot. I can help you find iPhones, iPads, check stock, and answer questions about wholesale orders. What are you looking for?" }
+    { id: '1', sender: 'ai', text: "Hello! I'm Cryzo Copilot. I can help you find iPhones, iPads, check stock, and answer questions about your order. What are you looking for?" }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);

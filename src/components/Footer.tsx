@@ -22,12 +22,8 @@ export const Footer: React.FC<Props> = ({ onNavigate }) => {
             </p>
             
             <div className="flex flex-wrap gap-3 mb-8">
-              <img src="https://flagcdn.com/w40/hk.png" alt="Hong Kong" className="h-6 w-auto rounded shadow-sm hover:-translate-y-1 transition-transform" title="Hong Kong" />
-              <img src="https://flagcdn.com/w40/jp.png" alt="Japan" className="h-6 w-auto rounded shadow-sm hover:-translate-y-1 transition-transform" title="Japan" />
-              <img src="https://flagcdn.com/w40/au.png" alt="Australia" className="h-6 w-auto rounded shadow-sm hover:-translate-y-1 transition-transform" title="Australia" />
-              <img src="https://flagcdn.com/w40/eu.png" alt="Europe" className="h-6 w-auto rounded shadow-sm hover:-translate-y-1 transition-transform" title="Europe" />
-              <img src="https://flagcdn.com/w40/ca.png" alt="Canada" className="h-6 w-auto rounded shadow-sm hover:-translate-y-1 transition-transform" title="Canada" />
-              <img src="https://flagcdn.com/w40/us.png" alt="USA" className="h-6 w-auto rounded shadow-sm hover:-translate-y-1 transition-transform" title="USA" />
+              <img src="https://flagcdn.com/w40/us.png" alt="USA" className="h-7 w-auto rounded shadow-sm" title="USA" />
+              <span className="text-sm text-gray-500 self-center">Ships from USA</span>
             </div>
           </div>
 

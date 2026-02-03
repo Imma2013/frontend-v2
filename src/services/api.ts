@@ -1,10 +1,15 @@
 // Cryzo API Service - Connects frontend to backend
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+// Response cache for faster repeated searches
+const searchCache = new Map<string, { data: SearchResponse; timestamp: number }>();
+const chatCache = new Map<string, { data: { success: boolean; response: string; intent?: string }; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 export interface SearchResponse {
   success: boolean;
   query: string;
-  model: 'Flash' | 'Pro' | 'fallback' | 'none';
+  model: 'Flash' | 'Pro' | 'fallback' | 'none' | 'quick';
   intent?: 'search' | 'compare' | 'recommend' | 'question' | 'greeting' | 'other';
   message?: string;
   suggestion?: string;
@@ -13,6 +18,7 @@ export interface SearchResponse {
   processingTime?: number;
   error?: string;
   fallback?: boolean;
+  cached?: boolean;
 }
 
 export interface SearchFilters {
@@ -56,8 +62,17 @@ export interface Product {
   variations?: ProductVariation[];
 }
 
-// AI-Powered Search (uses Gemini)
+// AI-Powered Search (uses Gemini) - with caching for speed
 export const aiSearch = async (query: string): Promise<SearchResponse> => {
+  const cacheKey = query.toLowerCase().trim();
+
+  // Check cache first - instant return for repeated queries
+  const cached = searchCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    console.log('🚀 Cache hit for:', query);
+    return { ...cached.data, cached: true } as SearchResponse;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/search`, {
       method: 'POST',
@@ -72,6 +87,12 @@ export const aiSearch = async (query: string): Promise<SearchResponse> => {
     }
 
     const data = await response.json();
+
+    // Cache successful responses
+    if (data.success) {
+      searchCache.set(cacheKey, { data, timestamp: Date.now() });
+    }
+
     return data;
   } catch (error) {
     console.error('AI Search Error:', error);
@@ -198,8 +219,17 @@ export const createCheckout = async (
   }
 };
 
-// Chat with AI
+// Chat with AI - with caching for common questions
 export const chatWithAI = async (message: string): Promise<{ success: boolean; response: string; intent?: string }> => {
+  const cacheKey = message.toLowerCase().trim();
+
+  // Check cache first
+  const cached = chatCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    console.log('🚀 Chat cache hit for:', message);
+    return cached.data;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/chat`, {
       method: 'POST',
@@ -207,7 +237,14 @@ export const chatWithAI = async (message: string): Promise<{ success: boolean; r
       body: JSON.stringify({ message }),
     });
 
-    return await response.json();
+    const data = await response.json();
+
+    // Cache successful responses
+    if (data.success) {
+      chatCache.set(cacheKey, { data, timestamp: Date.now() });
+    }
+
+    return data;
   } catch (error) {
     return { success: false, response: 'Connection error. Please try again.' };
   }

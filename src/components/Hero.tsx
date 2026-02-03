@@ -31,7 +31,7 @@ export const Hero: React.FC<Props> = ({ hidden = false }) => {
         
         {/* Subheadline */}
         <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-          Access verified wholesale lots directly from USA Hub. Source phones in bulk with transparent pricing.
+          Premium refurbished iPhones and iPads, shipped directly from USA. Transparent pricing, fast delivery.
         </p>
       </div>
     </div>

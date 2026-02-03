@@ -10,7 +10,8 @@ import {
   Heart,
   Bookmark,
   ArrowUpRight,
-  Cpu
+  Cpu,
+  MapPin
 } from 'lucide-react';
 
 interface Props {
@@ -57,11 +58,13 @@ export const ProductCard: React.FC<Props> = ({
   const availableStorages = [...new Set(variations.map(v => v.storage))];
   const availableGrades = [...new Set(variations.map(v => v.grade))];
   const availableColors = [...new Set(variations.map(v => v.color))];
+  const availableOrigins = [...new Set(variations.map(v => v.origin).filter(Boolean))];
 
   const [qty, setQty] = useState(3);
   const [selectedStorage, setSelectedStorage] = useState(product.storage);
   const [selectedGrade, setSelectedGrade] = useState<string>(variations[0]?.grade || product.grade);
   const [selectedColor, setSelectedColor] = useState(variations[0]?.color || product.color || 'Black');
+  const [selectedOrigin, setSelectedOrigin] = useState(variations[0]?.origin || product.origin);
   const [currentPrice, setCurrentPrice] = useState(product.priceUsd);
   const [currentStock, setCurrentStock] = useState(product.stock);
   const [isHovered, setIsHovered] = useState(false);
@@ -72,11 +75,14 @@ export const ProductCard: React.FC<Props> = ({
       const match = variations.find(v =>
         v.storage === selectedStorage &&
         v.grade === selectedGrade &&
-        v.color === selectedColor
+        v.color === selectedColor &&
+        v.origin === selectedOrigin
       ) || variations.find(v =>
-        v.storage === selectedStorage && v.color === selectedColor
+        v.storage === selectedStorage && v.color === selectedColor && v.origin === selectedOrigin
       ) || variations.find(v =>
-        v.color === selectedColor
+        v.storage === selectedStorage && v.origin === selectedOrigin
+      ) || variations.find(v =>
+        v.origin === selectedOrigin
       ) || variations[0];
 
       if (match) {
@@ -84,7 +90,7 @@ export const ProductCard: React.FC<Props> = ({
         setCurrentStock(match.stock);
       }
     }
-  }, [selectedStorage, selectedGrade, selectedColor, variations]);
+  }, [selectedStorage, selectedGrade, selectedColor, selectedOrigin, variations]);
 
   // Get stock for a specific option
   const getStockForOption = (type: 'storage' | 'grade' | 'color', value: string) => {
@@ -125,8 +131,8 @@ export const ProductCard: React.FC<Props> = ({
           {/* Origin & Save */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-lg border border-white/10">
-              <span className="text-sm">{originFlags[product.origin] || '🌍'}</span>
-              <span className="text-[10px] font-bold text-gray-400">{product.origin}</span>
+              <span className="text-sm">{originFlags[selectedOrigin] || '🌍'}</span>
+              <span className="text-[10px] font-bold text-gray-400">{selectedOrigin}</span>
             </div>
             <button
               onClick={(e) => {
@@ -164,7 +170,7 @@ export const ProductCard: React.FC<Props> = ({
       {/* Configuration Section */}
       <div className="p-4 space-y-4" onClick={(e) => e.stopPropagation()}>
         {/* Variant selectors - Shows only available options with stock */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {/* Storage */}
           <div className="space-y-1.5">
             <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Storage</label>
@@ -182,6 +188,23 @@ export const ProductCard: React.FC<Props> = ({
                   </option>
                 );
               })}
+            </select>
+          </div>
+
+          {/* Origin/Region */}
+          <div className="space-y-1.5">
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Region</label>
+            <select
+              value={selectedOrigin}
+              onChange={(e) => setSelectedOrigin(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-lg px-2 py-2 focus:outline-none focus:border-cyan-500/50 cursor-pointer appearance-none"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
+            >
+              {(availableOrigins.length > 0 ? availableOrigins : [product.origin]).map((o) => (
+                <option key={o} value={o} className="bg-gray-900">
+                  {originFlags[o] || '🌍'} {o}
+                </option>
+              ))}
             </select>
           </div>
 

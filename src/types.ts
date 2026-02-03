@@ -27,14 +27,19 @@ export interface Product {
 }
 
 export type Grade = 'Brand New' | 'A2' | 'A1' | 'B1' | 'B1 (Low Batt)' | 'B2' | 'Refurb A' | 'Refurb B' | 'Refurb C';
-export type Origin = 'US' | 'JP' | 'HK' | 'EU' | 'AU';
+export type Origin = 'US' | 'JP' | 'HK' | 'EU' | 'AU' | 'CA' | 'CN' | 'SG' | 'KR' | 'UAE';
 
 export const ORIGIN_FLAGS: Record<string, string> = {
-  US: 'us',
-  JP: 'jp',
-  HK: 'hk',
-  EU: 'eu',
-  AU: 'au'
+  US: '🇺🇸',
+  JP: '🇯🇵',
+  HK: '🇭🇰',
+  EU: '🇪🇺',
+  AU: '🇦🇺',
+  CA: '🇨🇦',
+  CN: '🇨🇳',
+  SG: '🇸🇬',
+  KR: '🇰🇷',
+  UAE: '🇦🇪'
 };
 
 export const ORIGIN_NAMES: Record<string, string> = {
@@ -42,7 +47,12 @@ export const ORIGIN_NAMES: Record<string, string> = {
   JP: 'Japan',
   HK: 'Hong Kong',
   EU: 'Europe',
-  AU: 'Australia'
+  AU: 'Australia',
+  CA: 'Canada',
+  CN: 'China',
+  SG: 'Singapore',
+  KR: 'Korea',
+  UAE: 'UAE'
 };
 
 export interface Country {

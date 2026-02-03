@@ -21,7 +21,10 @@ import {
   ShoppingCart,
   Heart,
   User,
-  LogOut
+  LogOut,
+  Play,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import type { Product } from '../types';
@@ -106,22 +109,6 @@ const AnimatedCounter: React.FC<{ target: number; suffix?: string; prefix?: stri
   return <span ref={ref}>{prefix}{count.toLocaleString()}{suffix}</span>;
 };
 
-// Region badge component
-const RegionBadge: React.FC<{ flag: string; name: string; active?: boolean }> = ({ flag, name, active }) => (
-  <motion.div
-    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
-      active
-        ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
-        : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20 hover:text-gray-300'
-    }`}
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-  >
-    <span className="text-sm">{flag}</span>
-    <span className="text-xs font-semibold">{name}</span>
-  </motion.div>
-);
-
 // Quick action chips
 const QuickChip: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => (
   <motion.button
@@ -179,19 +166,17 @@ export const HomePage: React.FC<HomePageProps> = ({
     "Show all Japan stock"
   ];
 
-  const regions = [
-    { flag: '🇺🇸', name: 'USA' },
-    { flag: '🇯🇵', name: 'Japan' },
-    { flag: '🇭🇰', name: 'Hong Kong' },
-    { flag: '🇪🇺', name: 'Europe' },
-    { flag: '🇦🇺', name: 'Australia' },
-    { flag: '🇨🇦', name: 'Canada' },
-  ];
-
   const stats = [
     { value: 10000, suffix: '+', label: 'Units Available', icon: Package },
     { value: 98, suffix: '%', label: 'Grade Accuracy', icon: Shield },
     { value: 6, suffix: '', label: 'Global Hubs', icon: Globe },
+  ];
+
+  // Supplier showcase videos (muted autoplay)
+  const supplierVideos = [
+    { id: 'v1', src: '/videos/supplier-1.mp4', label: 'Stock Verification' },
+    { id: 'v2', src: '/videos/supplier-2.mp4', label: 'Quality Check' },
+    { id: 'v3', src: '/videos/supplier-3.mp4', label: 'Warehouse Tour' },
   ];
 
   return (
@@ -501,18 +486,6 @@ export const HomePage: React.FC<HomePageProps> = ({
             ))}
           </motion.div>
 
-          {/* Region filters */}
-          <motion.div
-            className="flex flex-wrap items-center justify-center gap-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
-            <span className="text-xs text-gray-500 mr-2">Sourcing from:</span>
-            {regions.map((region, i) => (
-              <RegionBadge key={i} {...region} />
-            ))}
-          </motion.div>
         </div>
       </motion.section>
 
@@ -596,6 +569,55 @@ export const HomePage: React.FC<HomePageProps> = ({
               </button>
             </motion.div>
           )}
+
+          {/* Quality Verified Video Section */}
+          <motion.div
+            className="mt-20 pt-12 border-t border-white/5"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-4">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Verified Source</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-black text-white mb-2">Quality Verified</h2>
+              <p className="text-sm text-gray-500 max-w-md mx-auto">Direct footage from our global suppliers. Every unit inspected before shipping.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {supplierVideos.map((video, i) => (
+                <motion.div
+                  key={video.id}
+                  className="relative rounded-2xl overflow-hidden bg-gray-900/50 border border-white/5 group"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <video
+                    src={video.src}
+                    muted
+                    autoPlay
+                    loop
+                    playsInline
+                    className="w-full aspect-[9/16] object-cover"
+                  />
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent pointer-events-none" />
+                  {/* Label */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <span className="text-sm font-semibold text-white">{video.label}</span>
+                  </div>
+                  {/* Muted indicator */}
+                  <div className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur-sm rounded-lg">
+                    <VolumeX className="w-4 h-4 text-white/70" />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
