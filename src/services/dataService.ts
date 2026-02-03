@@ -421,20 +421,6 @@ export const products: Product[] = [
   // Legacy Products (existing)
   // =====================
   {
-    id: 'p5',
-    brand: 'Samsung',
-    model: 'Galaxy S24 Ultra',
-    modelNumber: 'SM-S928B',
-    grade: 'Brand New',
-    storage: '512GB',
-    color: 'Titanium Gray',
-    priceUsd: 1080,
-    stock: 60,
-    origin: 'HK',
-    imageUrl: '',
-    simType: 'Dual SIM'
-  },
-  {
     id: 'p6',
     brand: 'Apple',
     model: 'iPhone 12 Pro',

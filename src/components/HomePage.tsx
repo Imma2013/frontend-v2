@@ -16,6 +16,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { ProductCard } from './ProductCard';
+import { Footer } from './Footer';
 import type { Product } from '../types';
 import type { User as FirebaseUser } from 'firebase/auth';
 
@@ -550,6 +551,9 @@ export const HomePage: React.FC<HomePageProps> = ({
 
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer onNavigate={onNavigate} />
 
     </div>
   );

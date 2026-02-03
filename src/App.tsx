@@ -260,6 +260,9 @@ const App: React.FC = () => {
             onBack={() => setCurrentView('home')}
             user={user}
             onLogout={handleLogout}
+            savedIds={savedIds}
+            watchlistItems={allProducts.filter(p => savedIds.includes(p.id))}
+            onViewWatchlist={() => setCurrentView('watchlist')}
           />
         )}
 

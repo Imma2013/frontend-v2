@@ -26,7 +26,7 @@ export interface Product {
   variations?: ProductVariation[];
 }
 
-export type Grade = 'Brand New' | 'A2' | 'A1' | 'B1' | 'B2' | 'Refurb A' | 'Refurb B' | 'Refurb C';
+export type Grade = 'Brand New' | 'Like New' | 'Good';
 export type Origin = 'US' | 'JP' | 'HK' | 'EU' | 'AU' | 'CA' | 'CN' | 'SG' | 'KR' | 'UAE';
 
 export const ORIGIN_FLAGS: Record<string, string> = {

@@ -1,6 +1,39 @@
 import React, { useState } from 'react';
 import { type Product } from '../types';
-import { X, CheckCircle, Truck, Battery, Cpu, Smartphone, ShoppingCart, Star, Heart, Package, ChevronLeft, Globe } from 'lucide-react';
+import { X, CheckCircle, Truck, Battery, Cpu, Smartphone, ShoppingCart, Star, Heart, Package, ChevronLeft } from 'lucide-react';
+
+// Get product image based on model name
+const getProductImage = (model: string): string => {
+  const lowerModel = model.toLowerCase();
+
+  // iPads
+  if (lowerModel.includes('ipad')) {
+    return '/images/ipad.jpg';
+  }
+
+  // iPhone 15/16 Pro models
+  if ((lowerModel.includes('15') || lowerModel.includes('16')) && lowerModel.includes('pro')) {
+    return '/images/iphone-pro.jpg';
+  }
+
+  // iPhone 14 Pro models
+  if (lowerModel.includes('14') && lowerModel.includes('pro')) {
+    return '/images/iphone-14-pro.jpg';
+  }
+
+  // iPhone 14 (non-Pro)
+  if (lowerModel.includes('14')) {
+    return '/images/iphone-14.jpg';
+  }
+
+  // iPhone 13 models
+  if (lowerModel.includes('13')) {
+    return '/images/iphone-13.jpg';
+  }
+
+  // Default fallback
+  return '/images/iphone-pro.jpg';
+};
 
 interface Props {
   product: Product;
@@ -18,7 +51,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
   const availableColors = [...new Set(variations.map(v => v.color))];
   const availableGrades = [...new Set(variations.map(v => v.grade))];
 
-  const [qty, setQty] = useState(3);
+  const [qty, setQty] = useState(1);
   const [selectedStorage, setSelectedStorage] = useState(availableStorages[0] || product.storage);
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || product.color || 'Black');
   const [selectedGrade, setSelectedGrade] = useState(availableGrades[0] || product.grade);
@@ -32,11 +65,12 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
   const currentPrice = currentVariation?.price || product.priceUsd;
   const currentStock = currentVariation?.stock || product.stock;
 
+  const isIPad = product.model.toLowerCase().includes('ipad');
   const specs = [
     { label: 'Processor', value: 'A-Series Bionic', icon: <Cpu className="w-4 h-4" /> },
-    { label: 'Network', value: 'Unlocked / Global', icon: <Globe className="w-4 h-4" /> },
+    { label: 'Connectivity', value: isIPad ? 'WiFi Only' : 'eSIM Unlocked', icon: <Smartphone className="w-4 h-4" /> },
     { label: 'Battery', value: '85%+ Guaranteed', icon: <Battery className="w-4 h-4" /> },
-    { label: 'Packaging', value: 'Bulk / White Box', icon: <Package className="w-4 h-4" /> },
+    { label: 'Packaging', value: 'White Box', icon: <Package className="w-4 h-4" /> },
   ];
 
   const handleAdd = () => {
@@ -79,6 +113,16 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
             </div>
           </div>
 
+          {/* Product Image */}
+          <div className="relative h-48 md:h-64 overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50">
+            <img
+              src={getProductImage(product.model)}
+              alt={product.model}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent" />
+          </div>
+
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-6 md:p-8">
             {/* Title */}
@@ -89,7 +133,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
                 <div className="flex text-yellow-400">
                   {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                 </div>
-                <span className="text-sm font-medium text-gray-500">Verified Wholesale Batch</span>
+                <span className="text-sm font-medium text-gray-500">Verified Quality</span>
               </div>
             </div>
 
@@ -193,7 +237,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
               </div>
               <div className="flex items-center text-cyan-400 text-sm font-medium">
                 <CheckCircle className="w-5 h-5 mr-3" />
-                Secure B2B transaction via Stripe
+                Secure payment via Stripe
               </div>
             </div>
           </div>
@@ -225,7 +269,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
                   </div>
                   <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
                     <button
-                      onClick={() => setQty(Math.max(3, qty - 1))}
+                      onClick={() => setQty(Math.max(1, qty - 1))}
                       className="w-9 h-9 flex items-center justify-center font-bold text-lg text-gray-400 hover:text-cyan-400 transition-colors"
                     >
                       -

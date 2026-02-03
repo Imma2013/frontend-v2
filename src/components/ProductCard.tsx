@@ -23,16 +23,22 @@ interface Props {
 }
 
 const ALL_STORAGE_OPTIONS = ['32GB', '64GB', '128GB', '256GB', '512GB', '1TB'];
-const ALL_GRADE_OPTIONS: Grade[] = ['Brand New', 'A2', 'A1', 'B1', 'B2', 'Refurb A', 'Refurb B', 'Refurb C'];
+const ALL_GRADE_OPTIONS: Grade[] = ['Brand New', 'Like New', 'Good'];
 const ALL_COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Purple', 'Gold', 'Silver', 'Green', 'Red', 'Pink', 'Space Gray'];
 
 // Grade color mapping
-const gradeColors: Record<Grade, { bg: string; text: string; border: string }> = {
+const gradeColors: Record<string, { bg: string; text: string; border: string }> = {
   'Brand New': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' },
-  'Refurb A': { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
-  'Refurb B': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
-  'Refurb C': { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30' },
-  'Refurb D': { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30' },
+  'Like New': { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
+  'Good': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
+};
+
+// Map old grades to new simplified grades
+const mapGrade = (grade: string): string => {
+  if (grade === 'Brand New') return 'Brand New';
+  if (['A2', 'A1', 'Refurb A'].includes(grade)) return 'Like New';
+  if (['B1', 'B2', 'Refurb B', 'Refurb C', 'Refurb D'].includes(grade)) return 'Good';
+  return 'Good'; // Default fallback
 };
 
 // Origin flag mapping
@@ -43,6 +49,39 @@ const originFlags: Record<string, string> = {
   EU: '🇪🇺',
   AU: '🇦🇺',
   CA: '🇨🇦',
+};
+
+// Get product image based on model name
+const getProductImage = (model: string): string => {
+  const lowerModel = model.toLowerCase();
+
+  // iPads
+  if (lowerModel.includes('ipad')) {
+    return '/images/ipad.jpg';
+  }
+
+  // iPhone 15/16 Pro models
+  if ((lowerModel.includes('15') || lowerModel.includes('16')) && lowerModel.includes('pro')) {
+    return '/images/iphone-pro.jpg';
+  }
+
+  // iPhone 14 Pro models
+  if (lowerModel.includes('14') && lowerModel.includes('pro')) {
+    return '/images/iphone-14-pro.jpg';
+  }
+
+  // iPhone 14 (non-Pro)
+  if (lowerModel.includes('14')) {
+    return '/images/iphone-14.jpg';
+  }
+
+  // iPhone 13 models
+  if (lowerModel.includes('13')) {
+    return '/images/iphone-13.jpg';
+  }
+
+  // Default fallback
+  return '/images/iphone-pro.jpg';
 };
 
 export const ProductCard: React.FC<Props> = ({
@@ -60,7 +99,7 @@ export const ProductCard: React.FC<Props> = ({
   const availableColors = [...new Set(variations.map(v => v.color))];
   const availableOrigins = [...new Set(variations.map(v => v.origin).filter(Boolean))];
 
-  const [qty, setQty] = useState(3);
+  const [qty, setQty] = useState(1);
   const [selectedStorage, setSelectedStorage] = useState(product.storage);
   const [selectedGrade, setSelectedGrade] = useState<string>(variations[0]?.grade || product.grade);
   const [selectedColor, setSelectedColor] = useState(variations[0]?.color || product.color || 'Black');
@@ -99,7 +138,8 @@ export const ProductCard: React.FC<Props> = ({
   };
 
   const lotTotal = currentPrice * qty;
-  const gradeStyle = gradeColors[selectedGrade] || gradeColors['Refurb A'];
+  const displayGrade = mapGrade(selectedGrade);
+  const gradeStyle = gradeColors[displayGrade] || gradeColors['Good'];
 
   return (
     <motion.div
@@ -111,6 +151,16 @@ export const ProductCard: React.FC<Props> = ({
     >
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+      {/* Product Image */}
+      <div className="relative h-40 overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50">
+        <img
+          src={getProductImage(product.model)}
+          alt={product.model}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
+      </div>
 
       {/* Header */}
       <div className="relative p-4 border-b border-white/5">
@@ -154,7 +204,7 @@ export const ProductCard: React.FC<Props> = ({
         <div className="flex flex-wrap gap-2 mt-3">
           <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${gradeStyle.bg} ${gradeStyle.text} ${gradeStyle.border}`}>
             <ShieldCheck className="w-3 h-3" />
-            {selectedGrade}
+            {displayGrade}
           </span>
           <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${
             currentStock > 0
@@ -163,6 +213,10 @@ export const ProductCard: React.FC<Props> = ({
           }`}>
             <Signal className="w-3 h-3" />
             {currentStock > 0 ? `${currentStock} in stock` : 'Out of stock'}
+          </span>
+          {/* SIM Type indicator */}
+          <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border text-violet-400 bg-violet-500/10 border-violet-500/20">
+            {product.model.toLowerCase().includes('ipad') ? 'WiFi' : 'eSIM'}
           </span>
         </div>
       </div>
@@ -208,9 +262,9 @@ export const ProductCard: React.FC<Props> = ({
             </select>
           </div>
 
-          {/* Grade */}
+          {/* Condition */}
           <div className="space-y-1.5">
-            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Grade</label>
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Condition</label>
             <select
               value={selectedGrade}
               onChange={(e) => setSelectedGrade(e.target.value)}
@@ -218,7 +272,7 @@ export const ProductCard: React.FC<Props> = ({
               style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
             >
               {(availableGrades.length > 0 ? availableGrades : [product.grade]).map((g) => (
-                <option key={g} value={g} className="bg-gray-900">{g}</option>
+                <option key={g} value={g} className="bg-gray-900">{mapGrade(g)}</option>
               ))}
             </select>
           </div>
@@ -259,7 +313,7 @@ export const ProductCard: React.FC<Props> = ({
             <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1 text-right">Quantity</span>
             <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
               <button
-                onClick={() => setQty(Math.max(3, qty - 1))}
+                onClick={() => setQty(Math.max(1, qty - 1))}
                 className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-cyan-400 hover:bg-white/10 rounded-lg transition-all"
               >
                 <Minus className="w-4 h-4" />

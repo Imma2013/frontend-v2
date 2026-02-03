@@ -1,14 +1,25 @@
 import React from 'react';
-import { ArrowLeft, Mail, Phone, MapPin, ShoppingBag, Heart, Clock, LogOut, Shield, CreditCard } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, MapPin, ShoppingBag, Heart, Clock, LogOut, Shield, CreditCard, ChevronRight } from 'lucide-react';
 import type { User } from 'firebase/auth';
+import type { Product } from '../types';
 
 interface Props {
   onBack: () => void;
   user: User | null;
   onLogout?: () => void;
+  savedIds?: string[];
+  watchlistItems?: Product[];
+  onViewWatchlist?: () => void;
 }
 
-export const ProfileDashboard: React.FC<Props> = ({ onBack, user, onLogout }) => {
+export const ProfileDashboard: React.FC<Props> = ({
+  onBack,
+  user,
+  onLogout,
+  savedIds = [],
+  watchlistItems = [],
+  onViewWatchlist
+}) => {
   // Extract user info
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'Guest';
   const email = user?.email || 'Not signed in';
@@ -85,11 +96,14 @@ export const ProfileDashboard: React.FC<Props> = ({ onBack, user, onLogout }) =>
             <p className="text-2xl font-black text-white">0</p>
             <p className="text-xs text-gray-500">Orders</p>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+          <button
+            onClick={onViewWatchlist}
+            className="bg-white/5 border border-white/10 rounded-xl p-4 text-center hover:bg-white/10 hover:border-pink-500/30 transition-all"
+          >
             <Heart className="w-6 h-6 text-pink-400 mx-auto mb-2" />
-            <p className="text-2xl font-black text-white">0</p>
+            <p className="text-2xl font-black text-white">{savedIds.length}</p>
             <p className="text-xs text-gray-500">Watchlist</p>
-          </div>
+          </button>
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
             <Clock className="w-6 h-6 text-amber-400 mx-auto mb-2" />
             <p className="text-2xl font-black text-white">-</p>
@@ -101,6 +115,43 @@ export const ProfileDashboard: React.FC<Props> = ({ onBack, user, onLogout }) =>
             <p className="text-xs text-gray-500">Total Spent</p>
           </div>
         </div>
+
+        {/* Watchlist Preview */}
+        {watchlistItems.length > 0 && (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-white flex items-center gap-2">
+                <Heart className="w-5 h-5 text-pink-400" />
+                My Watchlist
+              </h3>
+              <button
+                onClick={onViewWatchlist}
+                className="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+              >
+                View All <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="space-y-3">
+              {watchlistItems.slice(0, 3).map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5"
+                >
+                  <div>
+                    <p className="font-semibold text-white text-sm">{item.model}</p>
+                    <p className="text-xs text-gray-500">{item.storage} • {item.grade}</p>
+                  </div>
+                  <p className="font-bold text-cyan-400">${item.priceUsd}</p>
+                </div>
+              ))}
+              {watchlistItems.length > 3 && (
+                <p className="text-xs text-gray-500 text-center">
+                  +{watchlistItems.length - 3} more items
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Contact Info */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
