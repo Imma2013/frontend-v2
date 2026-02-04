@@ -41,9 +41,11 @@ interface Props {
   onAddToCart: (product: Product, qty: number) => void;
   onViewCart: () => void;
   onAiSearch?: (query: string, model: string) => void;
+  isSaved?: boolean;
+  onToggleSaved?: (id: string) => void;
 }
 
-export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToCart }) => {
+export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToCart, isSaved = false, onToggleSaved }) => {
   const variations = product.variations || [];
 
   // Get available options from actual variations
@@ -55,7 +57,6 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
   const [selectedStorage, setSelectedStorage] = useState(availableStorages[0] || product.storage);
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || product.color || 'Black');
   const [selectedGrade, setSelectedGrade] = useState(availableGrades[0] || product.grade);
-  const [isSaved, setIsSaved] = useState(false);
 
   // Find current variation
   const currentVariation = variations.find(v =>
@@ -102,7 +103,7 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
             </button>
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => setIsSaved(!isSaved)}
+                onClick={() => onToggleSaved?.(product.id)}
                 className={`p-2 rounded-xl transition-colors ${isSaved ? 'bg-pink-500/20 text-pink-400' : 'hover:bg-white/5 text-gray-500 hover:text-white'}`}
               >
                 <Heart className="w-5 h-5" fill={isSaved ? 'currentColor' : 'none'} />

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Product } from '../types';
 import { ProductCard } from './ProductCard';
-import { Heart, ArrowLeft, Package, X } from 'lucide-react';
+import { Heart, ArrowLeft, Package } from 'lucide-react';
 
 interface Props {
   products: Product[];
@@ -16,26 +16,17 @@ export const Watchlist: React.FC<Props> = ({ products, onProductClick, onToggleS
       {/* Header */}
       <div className="sticky top-0 z-40 bg-gray-950/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={onBack}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 className="text-2xl font-black text-white">Watchlist</h1>
-                <p className="text-sm text-gray-500">{products.length} saved items</p>
-              </div>
-            </div>
+          <div className="flex items-center gap-4">
             <button
               onClick={onBack}
-              className="p-2 rounded-xl bg-white/5 hover:bg-red-500/20 hover:border-red-500/30 border border-white/10 transition-colors text-gray-400 hover:text-red-400"
-              title="Close"
+              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
             >
-              <X className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
+            <div>
+              <h1 className="text-2xl font-black text-white">Watchlist</h1>
+              <p className="text-sm text-gray-500">{products.length} saved items</p>
+            </div>
           </div>
         </div>
       </div>

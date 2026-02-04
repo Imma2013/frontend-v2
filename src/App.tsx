@@ -278,6 +278,8 @@ const App: React.FC = () => {
               setCurrentView('cart');
             }}
             onAiSearch={handleAiSearch}
+            isSaved={savedIds.includes(selectedProduct.id)}
+            onToggleSaved={toggleSaved}
           />
         )}
 
