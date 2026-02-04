@@ -119,6 +119,13 @@ const App: React.FC = () => {
     setAiMessage(null);
     setAiSuggestion(null);
 
+    // Also search local products for new models (iPhone 17, 16 Pro Max, 16e)
+    const lowerQuery = query.toLowerCase();
+    const localMatches = mockProducts.filter(p => {
+      const searchString = `${p.brand} ${p.model} ${p.grade}`.toLowerCase();
+      return lowerQuery.split(' ').every(term => searchString.includes(term));
+    });
+
     try {
       const response: SearchResponse = await aiSearch(query);
       setLastModel(response.model);
@@ -141,7 +148,17 @@ const App: React.FC = () => {
           simType: p.simType || 'Physical + eSIM',
           variations: p.variations || [],
         }));
-        setDisplayedProducts(normalized);
+
+        // Merge local matches with API results, avoiding duplicates
+        const apiModels = new Set(normalized.map((p: Product) => p.model));
+        const uniqueLocalMatches = localMatches.filter(p => !apiModels.has(p.model));
+        const merged = [...uniqueLocalMatches, ...normalized];
+
+        setDisplayedProducts(merged);
+      } else if (localMatches.length > 0) {
+        // API returned nothing but we have local matches
+        setDisplayedProducts(localMatches);
+        setAiMessage(`Found ${localMatches.length} matching product${localMatches.length > 1 ? 's' : ''}`);
       } else if (response.success && response.products?.length === 0) {
         setAiMessage(response.message || 'No products found matching your search.');
       } else {
@@ -149,7 +166,13 @@ const App: React.FC = () => {
       }
     } catch (error) {
       console.error('AI Search failed:', error);
-      handleLocalSearch(query);
+      // Try local matches first, then full local search
+      if (localMatches.length > 0) {
+        setDisplayedProducts(localMatches);
+        setAiMessage(`Found ${localMatches.length} matching product${localMatches.length > 1 ? 's' : ''}`);
+      } else {
+        handleLocalSearch(query);
+      }
     } finally {
       setIsSearching(false);
     }
