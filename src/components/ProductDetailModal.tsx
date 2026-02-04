@@ -6,9 +6,19 @@ import { X, CheckCircle, Truck, Battery, Cpu, Smartphone, ShoppingCart, Star, He
 const getProductImage = (model: string): string => {
   const lowerModel = model.toLowerCase();
   if (lowerModel.includes('ipad')) return '/images/ipad.jpg';
+  // iPhone 17 Pro/Pro Max
+  if (lowerModel.includes('17') && lowerModel.includes('pro')) return '/images/iphone-17-pro.jpg';
+  // iPhone 17 (non-Pro)
+  if (lowerModel.includes('17')) return '/images/iphone-17.jpg';
+  // iPhone 16e
+  if (lowerModel.includes('16e')) return '/images/iphone-16e.jpg';
+  // iPhone 15/16 Pro
   if ((lowerModel.includes('15') || lowerModel.includes('16')) && lowerModel.includes('pro')) return '/images/iphone-pro.jpg';
+  // iPhone 14 Pro
   if (lowerModel.includes('14') && lowerModel.includes('pro')) return '/images/iphone-14-pro.jpg';
-  if (lowerModel.includes('14')) return '/images/iphone-14.jpg';
+  // iPhone 14 and 15 (non-Pro)
+  if (lowerModel.includes('14') || lowerModel.includes('15')) return '/images/iphone-14-15.jpg';
+  // iPhone 13
   if (lowerModel.includes('13')) return '/images/iphone-13.jpg';
   return '/images/iphone-pro.jpg';
 };
