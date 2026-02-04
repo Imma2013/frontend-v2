@@ -149,12 +149,30 @@ const App: React.FC = () => {
           variations: p.variations || [],
         }));
 
-        // Merge local matches with API results, avoiding duplicates
-        const apiModels = new Set(normalized.map((p: Product) => p.model));
-        const uniqueLocalMatches = localMatches.filter(p => !apiModels.has(p.model));
-        const merged = [...uniqueLocalMatches, ...normalized];
+        // Filter API results to only include products that match search terms
+        const searchTerms = lowerQuery.split(' ').filter(t => t.length > 1);
+        const filteredApi = normalized.filter((p: Product) => {
+          const productString = `${p.brand} ${p.model}`.toLowerCase();
+          // Check if all important search terms are in the product name
+          return searchTerms.every(term => {
+            // Skip generic terms like "like", "new", "good"
+            if (['like', 'new', 'good', 'brand'].includes(term)) return true;
+            return productString.includes(term);
+          });
+        });
 
-        setDisplayedProducts(merged);
+        // Merge local matches with filtered API results, avoiding duplicates
+        const apiModels = new Set(filteredApi.map((p: Product) => p.model));
+        const uniqueLocalMatches = localMatches.filter(p => !apiModels.has(p.model));
+        const merged = [...uniqueLocalMatches, ...filteredApi];
+
+        if (merged.length > 0) {
+          setDisplayedProducts(merged);
+        } else if (localMatches.length > 0) {
+          setDisplayedProducts(localMatches);
+        } else {
+          setDisplayedProducts(normalized); // Fallback to original API results
+        }
       } else if (localMatches.length > 0) {
         // API returned nothing but we have local matches
         setDisplayedProducts(localMatches);
