@@ -9,8 +9,8 @@ interface Props {
 }
 
 const selectModel = (userQuery: string): string => {
-  // Use Gemini 3.0 Flash for all searches - fast and smart
-  return "gemini-3.0-flash";
+  // Use Gemini 3.0 Flash Preview for all searches - fast and smart
+  return "gemini-3-flash-preview";
 };
 
 export const AiSearchBar: React.FC<Props> = ({ onSearch, isSearching, variant = 'hero', placeholder }) => {

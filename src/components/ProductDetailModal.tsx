@@ -114,13 +114,13 @@ export const ProductDetailModal: React.FC<Props> = ({ product, onClose, onAddToC
           </div>
 
           {/* Product Image */}
-          <div className="relative h-48 md:h-64 overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50">
+          <div className="relative h-56 md:h-72 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
             <img
               src={getProductImage(product.model)}
               alt={product.model}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain p-4"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-950/60 via-transparent to-transparent pointer-events-none" />
           </div>
 
           {/* Content */}

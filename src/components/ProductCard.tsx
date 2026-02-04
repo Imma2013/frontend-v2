@@ -7,11 +7,8 @@ import {
   Package,
   Plus,
   Minus,
-  Heart,
   Bookmark,
-  ArrowUpRight,
-  Cpu,
-  MapPin
+  Cpu
 } from 'lucide-react';
 
 interface Props {
@@ -152,14 +149,17 @@ export const ProductCard: React.FC<Props> = ({
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-      {/* Product Image */}
-      <div className="relative h-40 overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50">
+      {/* Product Image - Clickable */}
+      <div
+        className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 cursor-pointer"
+        onClick={onClick}
+      >
         <img
           src={getProductImage(product.model)}
           alt={product.model}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 p-2"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent pointer-events-none" />
       </div>
 
       {/* Header */}
@@ -337,24 +337,14 @@ export const ProductCard: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex gap-2 p-4 pt-0">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick?.();
-          }}
-          className="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-sm font-semibold text-gray-300 hover:text-white transition-all flex items-center justify-center gap-2"
-        >
-          View Details
-          <ArrowUpRight className="w-4 h-4" />
-        </button>
+      {/* Action button */}
+      <div className="p-4 pt-0">
         <button
           onClick={(e) => {
             e.stopPropagation();
             onQuickAdd?.(qty);
           }}
-          className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-gray-950 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-400/30"
+          className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-gray-950 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-400/30"
         >
           <Package className="w-4 h-4" />
           Add to Order

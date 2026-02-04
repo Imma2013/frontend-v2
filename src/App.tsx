@@ -92,6 +92,7 @@ const App: React.FC = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      setSavedIds([]); // Clear watchlist on logout
       setCurrentView('home');
     } catch (error) {
       console.error('Logout error:', error);

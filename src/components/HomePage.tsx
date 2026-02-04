@@ -7,8 +7,6 @@ import {
   Zap,
   Shield,
   ChevronDown,
-  Grid3X3,
-  List,
   Cpu,
   ShoppingCart,
   Heart,
@@ -129,7 +127,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   cartCount = 0
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('popular');
   const { scrollY } = useScroll();
 
@@ -483,34 +480,11 @@ export const HomePage: React.FC<HomePageProps> = ({
               <p className="text-sm text-gray-500">{products.length} products from verified suppliers</p>
             </div>
 
-            {/* View toggle */}
-            <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all ${
-                  viewMode === 'grid' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-500 hover:text-gray-300'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${
-                  viewMode === 'list' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-500 hover:text-gray-300'
-                }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
           </motion.div>
 
           {/* Product Grid */}
           <motion.div
-            className={`grid gap-6 ${
-              viewMode === 'grid'
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                : 'grid-cols-1'
-            }`}
+            className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
