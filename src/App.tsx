@@ -51,13 +51,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
-
-      // New products to always include at the top (from dataService)
-      const newProductModels = ['iPhone 17', 'iPhone 16 Pro Max', 'iPhone 16e'];
-      const newProducts = mockProducts.filter(p =>
-        newProductModels.some(model => p.model === model)
-      );
-
       try {
         const response = await getProducts();
         if (response.products && response.products.length > 0) {
@@ -77,21 +70,21 @@ const App: React.FC = () => {
             variations: p.variations || [],
           }));
 
-          // Filter out duplicates (in case backend has these products too)
+          // Add new products (iPhone 17, 16 Pro Max, 16e) if not already in backend
           const apiModels = new Set(normalized.map((p: Product) => p.model));
-          const uniqueNewProducts = newProducts.filter(p => !apiModels.has(p.model));
+          const newProducts = mockProducts.filter(p => !apiModels.has(p.model));
 
-          // Merge: new products first, then API products
-          const merged = [...uniqueNewProducts, ...normalized];
-          setAllProducts(merged);
-          setDisplayedProducts(merged);
+          // New products first, then backend products
+          const allProds = [...newProducts, ...normalized];
+          setAllProducts(allProds);
+          setDisplayedProducts(allProds);
         } else {
-          console.log('Using mock data (backend empty or unavailable)');
+          // Backend empty - use new products only
           setAllProducts(mockProducts);
           setDisplayedProducts(mockProducts);
         }
       } catch (error) {
-        console.error('Failed to fetch products, using mock data:', error);
+        console.error('Failed to fetch products:', error);
         setAllProducts(mockProducts);
         setDisplayedProducts(mockProducts);
       } finally {
@@ -119,11 +112,16 @@ const App: React.FC = () => {
     setAiMessage(null);
     setAiSuggestion(null);
 
-    // Also search local products for new models (iPhone 17, 16 Pro Max, 16e)
+    // Check if searching for new products (iPhone 17, 16 Pro Max, 16e)
     const lowerQuery = query.toLowerCase();
-    const localMatches = mockProducts.filter(p => {
-      const searchString = `${p.brand} ${p.model} ${p.grade}`.toLowerCase();
-      return lowerQuery.split(' ').every(term => searchString.includes(term));
+    const newProductMatches = mockProducts.filter(p => {
+      const searchString = `${p.brand} ${p.model}`.toLowerCase();
+      // Check if query matches this product
+      const queryTerms = lowerQuery.split(' ').filter(t => t.length > 1);
+      return queryTerms.every(term => {
+        if (['like', 'new', 'good', 'brand'].includes(term)) return true;
+        return searchString.includes(term);
+      });
     });
 
     try {
@@ -149,45 +147,22 @@ const App: React.FC = () => {
           variations: p.variations || [],
         }));
 
-        // Filter API results to only include products that match search terms
-        const searchTerms = lowerQuery.split(' ').filter(t => t.length > 1);
-        const filteredApi = normalized.filter((p: Product) => {
-          const productString = `${p.brand} ${p.model}`.toLowerCase();
-          // Check if all important search terms are in the product name
-          return searchTerms.every(term => {
-            // Skip generic terms like "like", "new", "good"
-            if (['like', 'new', 'good', 'brand'].includes(term)) return true;
-            return productString.includes(term);
-          });
-        });
+        // Add matching new products that aren't in backend yet
+        const apiModels = new Set(normalized.map((p: Product) => p.model));
+        const uniqueNewMatches = newProductMatches.filter(p => !apiModels.has(p.model));
 
-        // Merge local matches with filtered API results, avoiding duplicates
-        const apiModels = new Set(filteredApi.map((p: Product) => p.model));
-        const uniqueLocalMatches = localMatches.filter(p => !apiModels.has(p.model));
-        const merged = [...uniqueLocalMatches, ...filteredApi];
-
-        if (merged.length > 0) {
-          setDisplayedProducts(merged);
-        } else if (localMatches.length > 0) {
-          setDisplayedProducts(localMatches);
-        } else {
-          setDisplayedProducts(normalized); // Fallback to original API results
-        }
-      } else if (localMatches.length > 0) {
-        // API returned nothing but we have local matches
-        setDisplayedProducts(localMatches);
-        setAiMessage(`Found ${localMatches.length} matching product${localMatches.length > 1 ? 's' : ''}`);
-      } else if (response.success && response.products?.length === 0) {
-        setAiMessage(response.message || 'No products found matching your search.');
+        setDisplayedProducts([...uniqueNewMatches, ...normalized]);
+      } else if (newProductMatches.length > 0) {
+        // Backend returned nothing but we have matching new products
+        setDisplayedProducts(newProductMatches);
       } else {
+        setAiMessage(response.message || 'No products found matching your search.');
         handleLocalSearch(query);
       }
     } catch (error) {
       console.error('AI Search failed:', error);
-      // Try local matches first, then full local search
-      if (localMatches.length > 0) {
-        setDisplayedProducts(localMatches);
-        setAiMessage(`Found ${localMatches.length} matching product${localMatches.length > 1 ? 's' : ''}`);
+      if (newProductMatches.length > 0) {
+        setDisplayedProducts(newProductMatches);
       } else {
         handleLocalSearch(query);
       }
