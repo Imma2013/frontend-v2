@@ -129,6 +129,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
   const [showNavSearch, setShowNavSearch] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(8);
   const { scrollY } = useScroll();
 
   // Show navbar search when scrolled past hero
@@ -517,7 +518,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            {products.map((product, i) => (
+            {products.slice(0, visibleCount).map((product, i) => (
               <motion.div
                 key={product.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -537,15 +538,18 @@ export const HomePage: React.FC<HomePageProps> = ({
           </motion.div>
 
           {/* Load more */}
-          {products.length >= 8 && (
+          {products.length > visibleCount && (
             <motion.div
               className="flex justify-center mt-12"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              <button className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-500/30 rounded-xl text-sm font-semibold text-gray-300 hover:text-cyan-300 transition-all flex items-center gap-2">
-                Load More Products
+              <button
+                onClick={() => setVisibleCount(prev => prev + 8)}
+                className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-500/30 rounded-xl text-sm font-semibold text-gray-300 hover:text-cyan-300 transition-all flex items-center gap-2"
+              >
+                Load More Products ({products.length - visibleCount} remaining)
                 <ChevronDown className="w-4 h-4" />
               </button>
             </motion.div>

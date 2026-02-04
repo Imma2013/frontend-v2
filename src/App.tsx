@@ -51,6 +51,13 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
+
+      // New products to always include at the top (from dataService)
+      const newProductModels = ['iPhone 17', 'iPhone 16 Pro Max', 'iPhone 16e'];
+      const newProducts = mockProducts.filter(p =>
+        newProductModels.some(model => p.model === model)
+      );
+
       try {
         const response = await getProducts();
         if (response.products && response.products.length > 0) {
@@ -69,8 +76,15 @@ const App: React.FC = () => {
             simType: p.simType || 'Physical + eSIM',
             variations: p.variations || [],
           }));
-          setAllProducts(normalized);
-          setDisplayedProducts(normalized);
+
+          // Filter out duplicates (in case backend has these products too)
+          const apiModels = new Set(normalized.map((p: Product) => p.model));
+          const uniqueNewProducts = newProducts.filter(p => !apiModels.has(p.model));
+
+          // Merge: new products first, then API products
+          const merged = [...uniqueNewProducts, ...normalized];
+          setAllProducts(merged);
+          setDisplayedProducts(merged);
         } else {
           console.log('Using mock data (backend empty or unavailable)');
           setAllProducts(mockProducts);
