@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'framer-motion';
 import {
   Sparkles,
   Send,
@@ -128,7 +128,13 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
+  const [showNavSearch, setShowNavSearch] = useState(false);
   const { scrollY } = useScroll();
+
+  // Show navbar search when scrolled past hero
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setShowNavSearch(latest > 500);
+  });
 
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0.3]);
   const heroScale = useTransform(scrollY, [0, 300], [1, 0.98]);
@@ -177,19 +183,29 @@ export const HomePage: React.FC<HomePageProps> = ({
               <span className="text-lg font-black tracking-tight">CRYZO</span>
             </div>
 
-            {/* Navbar Search */}
-            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
-              <div className="relative w-full">
-                <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search phones with AI..."
-                  className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50"
-                />
-              </div>
-            </form>
+            {/* Navbar Search - appears when scrolled past hero */}
+            <AnimatePresence>
+              {showNavSearch && (
+                <motion.form
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  onSubmit={handleSearch}
+                  className="hidden md:flex flex-1 max-w-md mx-4"
+                >
+                  <div className="relative w-full">
+                    <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-400" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search with AI..."
+                      className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50"
+                    />
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
 
             {/* Nav Actions */}
             <div className="flex items-center gap-2">

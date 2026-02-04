@@ -149,6 +149,22 @@ export const ProductCard: React.FC<Props> = ({
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
+      {/* Remove from watchlist button - only shows when saved */}
+      {isSaved && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSaved?.(product.id);
+          }}
+          className="absolute top-3 right-3 z-10 p-1.5 bg-red-500/80 hover:bg-red-500 rounded-full text-white transition-colors shadow-lg"
+          title="Remove from watchlist"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      )}
+
       {/* Product Image - Clickable */}
       <div
         className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 cursor-pointer"
