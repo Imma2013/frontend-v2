@@ -152,11 +152,9 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   const quickSearches = [
-    "iPhone 15 Pro Max Grade A",
-    "Samsung S24 Ultra bulk",
-    "Compare iPhone 14 vs 15",
-    "Best value refurb phones",
-    "Show all Japan stock"
+    "iPhone 17 Like New",
+    "iPhone 16 Pro Max",
+    "Compare iPhone 15 vs 16",
   ];
 
   const stats = [
