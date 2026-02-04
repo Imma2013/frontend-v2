@@ -190,7 +190,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   animate={{ opacity: 1, width: 'auto' }}
                   exit={{ opacity: 0, width: 0 }}
                   onSubmit={handleSearch}
-                  className="hidden md:flex flex-1 max-w-md mx-4"
+                  className="flex flex-1 max-w-md mx-4"
                 >
                   <div className="relative w-full">
                     <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-400" />
@@ -199,8 +199,15 @@ export const HomePage: React.FC<HomePageProps> = ({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search with AI..."
-                      className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50"
+                      className="w-full pl-10 pr-12 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50"
                     />
+                    <button
+                      type="submit"
+                      disabled={!searchQuery.trim() || isSearching}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
                   </div>
                 </motion.form>
               )}

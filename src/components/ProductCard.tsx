@@ -32,7 +32,9 @@ const gradeColors: Record<string, { bg: string; text: string; border: string }> 
 
 // Map old grades to new simplified grades
 const mapGrade = (grade: string): string => {
-  if (grade === 'Brand New') return 'Brand New';
+  // Already mapped grades - pass through
+  if (grade === 'Brand New' || grade === 'Like New' || grade === 'Good') return grade;
+  // Old grade codes - map to new names
   if (['A2', 'A1', 'Refurb A'].includes(grade)) return 'Like New';
   if (['B1', 'B2', 'Refurb B', 'Refurb C', 'Refurb D'].includes(grade)) return 'Good';
   return 'Good'; // Default fallback
@@ -116,9 +118,24 @@ export const ProductCard: React.FC<Props> = ({
     }
   }, [selectedStorage, selectedGrade, selectedColor, selectedOrigin, variations]);
 
-  // Get stock for a specific option
-  const getStockForOption = (type: 'storage' | 'grade' | 'color', value: string) => {
-    const matching = variations.filter(v => v[type] === value);
+  // Get stock for a specific option - filtered by current selections
+  const getStockForOption = (type: 'storage' | 'grade' | 'color' | 'origin', value: string) => {
+    let matching = variations.filter(v => v[type] === value);
+
+    // Filter by other current selections to show relevant stock
+    if (type !== 'storage' && selectedStorage) {
+      matching = matching.filter(v => v.storage === selectedStorage);
+    }
+    if (type !== 'grade' && selectedGrade) {
+      matching = matching.filter(v => v.grade === selectedGrade);
+    }
+    if (type !== 'color' && selectedColor) {
+      matching = matching.filter(v => v.color === selectedColor);
+    }
+    if (type !== 'origin' && selectedOrigin) {
+      matching = matching.filter(v => v.origin === selectedOrigin);
+    }
+
     return matching.reduce((sum, v) => sum + (v.stock || 0), 0);
   };
 
